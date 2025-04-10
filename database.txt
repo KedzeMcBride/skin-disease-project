@@ -1,0 +1,91 @@
+-- 1. Create (and select) the database
+CREATE DATABASE IF NOT EXISTS skin_diagnostic_system;
+USE skin_diagnostic_system;
+
+-- 2. USER table
+CREATE TABLE user (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+);
+
+-- 3. ADMINISTRATOR table
+CREATE TABLE administrator (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    admin_name VARCHAR(100) NOT NULL,
+    admin_email VARCHAR(100) NOT NULL,
+    admin_password VARCHAR(255) NOT NULL
+);
+
+-- 4. DATASET_PROVIDER table
+CREATE TABLE dataset_provider (
+    provider_id INT AUTO_INCREMENT PRIMARY KEY,
+    name_of_files VARCHAR(255),
+    content TEXT
+);
+
+-- 5. SYSTEM table
+CREATE TABLE system (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    database_ref VARCHAR(255),
+    version VARCHAR(50),
+    admin_id INT NOT NULL,
+    dataset_provider_id INT NOT NULL,
+    FOREIGN KEY (admin_id) REFERENCES administrator(id),
+    FOREIGN KEY (dataset_provider_id) REFERENCES dataset_provider(provider_id)
+);
+
+-- 6. PATIENT table
+CREATE TABLE patient (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    next_records VARCHAR(255),
+    FOREIGN KEY (user_id) REFERENCES user(id)
+);
+
+-- 7. DOCTOR table
+CREATE TABLE doctor (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    specialty VARCHAR(100),
+    FOREIGN KEY (user_id) REFERENCES user(id)
+);
+
+-- 8. CNN_MODEL table
+CREATE TABLE cnn_model (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    image VARCHAR(255),
+    training_data TEXT,
+    last_updated DATETIME,
+    system_id INT NOT NULL,
+    FOREIGN KEY (system_id) REFERENCES system(id)
+);
+
+-- 9. RECORD table
+CREATE TABLE record (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    patient_id INT NOT NULL,
+    image VARCHAR(255),
+    image_type VARCHAR(50),
+    created_date DATETIME,
+    updated_date DATETIME,
+    cnn_model_id INT,
+    FOREIGN KEY (patient_id) REFERENCES patient(id),
+    FOREIGN KEY (cnn_model_id) REFERENCES cnn_model(id)
+);
+
+-- 10. MESSAGE table
+CREATE TABLE message (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sender_patient_id INT NOT NULL,
+    receiver_doctor_id INT NOT NULL,
+    message_content TEXT,
+    message_date DATETIME,
+    is_read BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (sender_patient_id) REFERENCES patient(id),
+    FOREIGN KEY (receiver_doctor_id) REFERENCES doctor(id)
+);
+
+
+for the registration form create an area where the user has to choose if the a signing up as a patient or doctor
