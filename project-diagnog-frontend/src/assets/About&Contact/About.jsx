@@ -4,7 +4,9 @@ const About = () => {
         <div className="container">
             <Navbar></Navbar>
             <div className="background">
-                <img src="" alt="" />
+                <h1>
+                    <p>hello</p>
+                </h1>
             </div>
         </div>
      );
