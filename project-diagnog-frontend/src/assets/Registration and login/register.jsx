@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom';
 import black_logo from '../images/blacklogo.png';
-import Signin from '../../signin';
+
+
 const Register = () => {
   return (
       <div className="form-container">
@@ -34,7 +36,9 @@ const Register = () => {
         </div>
           {/* submit button */}
         <button className="button-submit">Sign Up</button>
-        <p className="p">Already have a account? <span className="span"><a href={Signin}>Login</a></span></p>
+        <p className="p">
+          Already have an account? <span className="span"><Link to="/login">Login</Link></span>
+        </p>
         <div className="flex-row">
           <button className="btn google">
             <svg version="1.1" width={20} id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style={{enableBackground: 'new 0 0 512 512'}} xmlSpace="preserve">

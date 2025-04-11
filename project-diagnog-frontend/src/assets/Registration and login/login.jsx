@@ -1,3 +1,5 @@
+
+import { Link } from 'react-router-dom';
 import black_logo from '../images/blacklogo.png';
 
 const Login = () => {
@@ -30,7 +32,7 @@ const Login = () => {
           <span className="span">Forgot password?</span>
         </div>
         <button className="button-submit">Sign In</button>
-        <p className="p"> Do not have an account? <span className="span"><a href="">Sign Up</a></span>
+        <p className="p"> Do not have an account? <span className="span"><Link to="/register">Sign Up</Link></span>
         </p><p className="p line">Or With</p>
         <div className="flex-row">
           <button className="btn google">

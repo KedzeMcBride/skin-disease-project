@@ -1,20 +1,23 @@
-import Navbar from './assets/Body/Nav'
-import Welcome from './assets/Body/welcome'
-import Services from './assets/Body/service'
-import Process from './assets/Body/process'
-import Card from './assets/Body/card'
-import Footer from './assets/Body/footer'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Landing from './landing';
+import Register from './assets/Registration and login/register';
+import Login from './assets/Registration and login/login';
+
 function App() {
   return (
-    <>
-    <Navbar></Navbar>
-    <Welcome></Welcome>
-    <Services></Services>
-    <Process></Process>
-    <Card></Card>
-    <Footer></Footer>
-    </>
-  )
+    <Router>
+      <Routes>
+        {/* Home Page */}
+        <Route path="/landing" element={<Landing />} />
+      
+        {/* Register Page */}
+        <Route path="/register" element={<Register />} />
+
+        {/* Login Page */}
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
