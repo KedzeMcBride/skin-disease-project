@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import black_logo from '../images/blacklogo.png';
 import Validation from './registerValidation';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import {useState} from 'react';
-
+import axios from 'axios'
 
 const Register = () => {
 
@@ -12,6 +12,7 @@ const Register = () => {
       email: '',
       password: '',
     })
+    const Navigate = useNavigate();
     const [errors, setErrors] = useState({})
     const handleInput = (event) => {
       setValues(prev => ({ ...prev, [event.target.name]: event.target.value }));
@@ -19,7 +20,17 @@ const Register = () => {
     const handleSubmit =(event) => {
       event.preventDefault();
       setErrors(Validation(values));
+      // communicating with the db
+
+      if(errors.name ==="" && errors.email ==="" && errors.password ===""){
+        axios.post('http://localhost:3306/register', values)
+        .then(res => {
+          Navigate('/')
+        })
+        .catch(err => console.log(err));
+
     }
+  };
   
   return (
       <div className="form-container">
