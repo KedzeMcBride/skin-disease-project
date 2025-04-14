@@ -8,7 +8,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 const Login = () => {
   const [values, setValues] = useState({
     email: '',
-    password: '',
+    password: ''
   })
   const [errors, setErrors] = useState({})
   const handleInput = (event) => {
