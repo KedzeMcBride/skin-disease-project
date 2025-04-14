@@ -23,13 +23,11 @@ const Register = () => {
       // communicating with the db
 
       if(errors.name ==="" && errors.email ==="" && errors.password ===""){
-        axios.post('http://localhost:3306/register', values)
-        .then(res => {
+        axios.post('http://localhost:5174/register', values)
+        .then(() => {
           Navigate('/')
         })
-        .catch(err => console.log(err));
-
-    }
+        .catch(err => console.log(err)); }
   };
   
   return (

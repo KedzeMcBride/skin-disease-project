@@ -1,15 +1,18 @@
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import black_logo from '../images/blacklogo.png';
 import { useState } from 'react';
 import Validation from './loginValidation';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import axios from 'axios';
+
 
 const Login = () => {
   const [values, setValues] = useState({
     email: '',
     password: '',
   })
+  const Navigate = useNavigate();
   const [errors, setErrors] = useState({})
   const handleInput = (event) => {
     setValues(prev => ({ ...prev, [event.target.name]: event.target.value }));
@@ -17,7 +20,20 @@ const Login = () => {
   const handleSubmit =(event) => {
     event.preventDefault();
     setErrors(Validation(values));
-  }
+    
+    if(errors.email ==="" && errors.password ===""){
+      axios.post('http://localhost:5174/login', values)
+      .then(res => {
+        if(res.data === "LOGGED IN SUCCESSFULLY"){
+          Navigate('/landing');
+        }
+        else{
+          alert('User does not exist');
+        }
+      })
+      .catch(err => console.log(err)); }
+};
+
 
     return ( 
         <div className="form-container">
