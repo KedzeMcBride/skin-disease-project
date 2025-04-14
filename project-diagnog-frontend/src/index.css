@@ -1339,3 +1339,18 @@ h2 em {
     padding: 0.5em 1em; 
   }
 }
+/*Styling for error message*/
+.input-error {
+  border-color: #dc3545;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875em;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
