@@ -22,7 +22,7 @@ const Login = () => {
     setErrors(Validation(values));
     
     if(errors.email ==="" && errors.password ===""){
-      axios.post('http://localhost:5174/login', values)
+      axios.post('http://localhost:5000/login', values)
       .then(res => {
         if(res.data === "LOGGED IN SUCCESSFULLY"){
           Navigate('/landing');

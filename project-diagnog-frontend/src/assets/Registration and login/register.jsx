@@ -17,18 +17,20 @@ const Register = () => {
     const handleInput = (event) => {
       setValues(prev => ({ ...prev, [event.target.name]: event.target.value }));
     };
-    const handleSubmit =(event) => {
+    const handleSubmit = (event) => {
       event.preventDefault();
-      setErrors(Validation(values));
-      // communicating with the db
-
-      if(errors.name ==="" && errors.email ==="" && errors.password ===""){
+    
+      const validationErrors = Validation(values);
+      setErrors(validationErrors);
+    
+      if (Object.keys(validationErrors).length === 0) {
         axios.post('http://localhost:5174/register', values)
-        .then(() => {
-          Navigate('/')
-        })
-        .catch(err => console.log(err)); }
-  };
+          .then(() => {
+            Navigate('/');
+          })
+          .catch(err => console.log(err));
+      }
+    };
   
   return (
       <div className="form-container">

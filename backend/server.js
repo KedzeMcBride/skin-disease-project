@@ -16,7 +16,7 @@ const db = mysql.createConnection({
 app.post('/register', (req, res) => {
     const { name, email, password } = req.body;
 
-    const sql = "INSERT INTO db_user (name, email, password) VALUES (?)";
+    const sql = "INSERT INTO db_user (name, email, password) VALUES (?, ?, ?)";
     db.query(sql, [name, email, password], (err, data) => {
         if (err) {
             console.error(err);
@@ -27,7 +27,7 @@ app.post('/register', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-    const sql = " SELECT * FROM db_user WHERE 'email' = ? 'password' = ?";
+    const sql = "SELECT * FROM db_user WHERE email = ? AND password = ?";
     db.query(sql, [req.body.email, req.body.password], (err, data) => {
         if (err) {
             return res.json("ERROR FAILED TO LOGIN")
@@ -42,6 +42,6 @@ app.post('/login', (req, res) => {
 });
 
 
-app.listen(3306, () => {
-    console.log("Server running on port 3306");
+app.listen(5174, () => {
+    console.log("Server running on port 5174");
 });
