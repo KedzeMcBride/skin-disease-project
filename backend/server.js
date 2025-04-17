@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: './db.env' });
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
@@ -7,14 +7,18 @@ const bcrypt = require('bcryptjs');
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 app.use(express.json());
 
 // Database configuration
 const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
+  port: process.env.DB_PORT || 3306,
+  password: process.env.DB_PASSWORD || 'bruno8',
   database: process.env.DB_NAME || 'skin_diagnostic_system',
   waitForConnections: true,
   connectionLimit: 10,
@@ -153,7 +157,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5173;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

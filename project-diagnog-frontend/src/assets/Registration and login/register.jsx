@@ -24,7 +24,7 @@ const Register = () => {
       setErrors(validationErrors);
     
       if (Object.keys(validationErrors).length === 0) {
-        axios.post('http://localhost:5173/register', values)
+        axios.post('http://localhost:5000/register', values)
           .then(() => {
             Navigate('/');
           })
