@@ -12,23 +12,25 @@ const Register = () => {
       email: '',
       password: '',
     })
-    const Navigate = useNavigate();
+    const navigate = useNavigate();
     const [errors, setErrors] = useState({})
     const handleInput = (event) => {
       setValues(prev => ({ ...prev, [event.target.name]: event.target.value }));
     };
+    {/*Handling button submits*/}
+    
     const handleSubmit = (event) => {
       event.preventDefault();
-    
       const validationErrors = Validation(values);
-      setErrors(validationErrors);
+      setErrors (validationErrors);
     
-      if (Object.keys(validationErrors).length === 0) {
-        axios.post('http://localhost:5000/register', values)
-          .then(() => {
-            Navigate('/');
-          })
-          .catch(err => console.log(err));
+      if (errors.name ==="" & errors.email ==="" && errors.password==="") {
+        axios.post('http://localhost:8081/register', values)
+        .then( () => {
+          navigate('/landing');
+        }
+        )
+        .catch(err => console.log(err))  
       }
     };
   
@@ -68,7 +70,7 @@ const Register = () => {
         </div>
         {errors.password && (<div className="error-message">{errors.password}</div>)}
           {/* submit button */}
-        <button className="button-submit" type='submit'>Sign Up</button>
+        <button className="button-submit" type='submit' >Sign Up</button>
         <p className="p">
           Already have an account? <span className="span"><Link to="/login">Login</Link></span>
         </p>

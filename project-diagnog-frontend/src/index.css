@@ -228,7 +228,7 @@ body {
   background: linear-gradient(90deg, #000, #fff, #000);
   background-repeat: no-repeat;
   background-size: 70%;
-  animation: animate 6s linear infinite;
+  animation: animate 8s linear infinite;
   -webkit-background-clip: text; 
   -webkit-text-fill-color: transparent; 
 }

@@ -5,6 +5,9 @@ import Register from './assets/Registration and login/register';
 import Login from './assets/Registration and login/login';
 import Loader from './assets/loader/loader';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Contact from './assets/About&Contact/contact';
+import Home from './assets/Home/home';
+
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -24,6 +27,8 @@ function App() {
           <Route path="/landing" element={<Landing />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/contact" element={<Contact/>}/>
+          <Route path="/home" element={<Home/>}/>
         </Routes>
       )}
     </Router>

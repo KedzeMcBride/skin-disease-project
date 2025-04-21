@@ -22,13 +22,14 @@ const Login = () => {
     setErrors(Validation(values));
     
     if(errors.email ==="" && errors.password ===""){
-      axios.post('http://localhost:5000/login', values)
+      axios.post('http://localhost:8081/login', values)
       .then(res => {
         if(res.data === "LOGGED IN SUCCESSFULLY"){
           Navigate('/landing');
+          alert('Welcome back');
         }
         else{
-          alert('User does not exist');
+          alert('User does not exist try Again');
         }
       })
       .catch(err => console.log(err)); }
