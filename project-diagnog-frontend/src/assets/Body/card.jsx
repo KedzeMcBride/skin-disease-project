@@ -2,9 +2,10 @@ import ring from '../images/ring.png';
 import ec from '../images/ec.png';
 import derm from '../images/derm.png';
 const Card = () => {
-    return ( 
+return (
 <div className="containery">
 <h2>Top <em>FAQs</em> Of the Week</h2>
+
 <div className="card">
 <p><span>
 <div className="cardy">
