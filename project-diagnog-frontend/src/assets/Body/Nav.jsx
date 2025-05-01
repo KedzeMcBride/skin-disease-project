@@ -7,6 +7,12 @@ const Navbar = () => {
         <>
             <div className="nav">
                 <img src={logo} alt="" className="logo" />
+                <input type="checkbox" id="nav-toggle" className="nav-toggle" />
+                    <label htmlFor="nav-toggle" className="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </label>
                 <ul className="links">
                     <li><Link to="/home">Home</Link></li>
                     <li><a href="">About</a></li>

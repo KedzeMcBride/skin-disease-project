@@ -137,7 +137,7 @@ body {
 }
 
 
-/* Hamburger Menu Base Styles */
+/* Base styles for the hamburger menu */
 .nav-toggle {
   display: none;
 }
@@ -157,43 +157,66 @@ body {
   transition: all 0.3s ease;
 }
 
-/* MEDIA QUERIES for Responsive Navbar with Hamburger */
+/* Responsive styles for the navbar */
 @media (max-width: 768px) {
-  
-  .nav {
-    flex-wrap: nowrap;
-    justify-content: space-between;
-  }
-  
-  /* Hide the ul (links) by default */
   .nav ul {
     display: none;
     flex-direction: column;
     width: 100%;
-    background-color: black;
+    background-color: #151922;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    z-index: 1000;
   }
-  
+
   .nav ul li {
     margin: 10px 0;
     text-align: center;
   }
-  
-  /* Remove left margin from upload button in mobile view */
-  .nav .upload {
-    margin-left: 0;
+
+  .nav ul li a {
+    padding: 10px 0;
+    display: block;
   }
-  
-  /* Show the hamburger icon */
+
   .hamburger {
     display: flex;
   }
-  
- 
+
   .nav-toggle:checked + .hamburger + ul {
     display: flex;
   }
 }
+/* Style adjustments for the button in the hamburger menu */
+@media (max-width: 768px) {
+  .links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Add spacing between items */
+  }
 
+  .upload {
+    width: auto; /* Allow the button to size dynamically */
+    padding: 10px 20px; /* Add padding for better appearance */
+    font-size: 16px; /* Adjust font size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .upload img {
+    width: 20px; 
+    height: 20px;
+    margin-right: 8px; 
+  }
+
+  .upload a {
+    text-decoration: none;
+    color: white;
+  }
+}
 /* Body with welcome text */
 /* Base Styles */
 .welcome {
