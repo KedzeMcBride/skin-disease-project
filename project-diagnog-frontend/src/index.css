@@ -760,14 +760,22 @@ h2 em {
 /* Second Footer Section */
 .secondfooter {
   background-color: #4d423e;
-  padding: 20px;
+  padding: 30px;
   display: flex;
   margin-left: -20px;
   margin-right: -20px;
   justify-content: space-between;
   border-radius: 4px;
 }
-
+.legal{
+  padding-left: 100px;
+}
+.social{
+  padding-left: 150px;
+}
+.upload{
+  padding-left: 150px;
+}
 /* Links and Legal sections */
 .useful-links, .legal {
   flex: 1;

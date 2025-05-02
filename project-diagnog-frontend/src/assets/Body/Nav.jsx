@@ -14,7 +14,7 @@ const Navbar = () => {
                         <span></span>
                     </label>
                 <ul className="links">
-                    <li><Link to="/home">Home</Link></li>
+                    <li><Link to="/landing">Home</Link></li>
                     <li><a href="">About</a></li>
                     <li><Link to="/contact">Contact</Link></li>
                     <button className="upload"><img src={upload} alt="" className="cloud" /><a href="">Book Session</a></button>
