@@ -7,6 +7,8 @@ import Loader from './assets/loader/loader';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Contact from './assets/About&Contact/contact';
 import Chat from './dashboard/chat';
+import Text from './dashboard/text';
+import Diagnose from './dashboard/diagnose';
 
 
 function App() {
@@ -29,6 +31,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/chat" element={<Chat />} />
+          <Route path="/text" element={<Text />} />
+          <Route path="/diagnose" element={<Diagnose />} />
         </Routes>
       )}
     </Router>

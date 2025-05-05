@@ -2,9 +2,12 @@ import { BsChatDots,BsGearFill,BsBarChartFill} from 'react-icons/bs';
 import { BsPeopleFill } from 'react-icons/bs';
 import { MdDashboard } from 'react-icons/md';
 import { FaStethoscope, FaCheckCircle } from 'react-icons/fa';
+import { BsArrowLeft } from 'react-icons/bs';
 //import { FiLogOut } from 'react-icons/fi';
 import logo from '../assets/images/logo.png'; // Corrected logo import
-  
+import { Link } from 'react-router-dom';
+
+
 const DashboardNav = () => {
     return (
         <aside id="sidebar"> 
@@ -23,7 +26,7 @@ const DashboardNav = () => {
                 </li>
                 <li className="sidebar-list-item">
                 <FaStethoscope className='icon'/>
-                <a href="">Diagnostic</a>
+                <Link to="/diagnose">Diagnostic</Link>
                 </li>
                 <li className="sidebar-list-item">
                 <FaCheckCircle className='icon'/>
@@ -35,7 +38,7 @@ const DashboardNav = () => {
                 </li>
                 <li className="sidebar-list-item">
                 <BsChatDots className='icon'/>
-                <a href="">Chat</a>
+                <Link to="/text">Chat</Link>
                 </li>
                 <li className="sidebar-list-item">
                 <BsGearFill className='icon'/>
@@ -44,6 +47,10 @@ const DashboardNav = () => {
                 <li className="sidebar-list-item">
                 <BsBarChartFill className='icon'/>
                 <a href="">Reports</a>
+                </li>
+                <li className="sidebar-list-i">
+                <BsArrowLeft className='icon'/>
+                <Link to="/landing">Return</Link>
                 </li>
             </ul>
         </aside>

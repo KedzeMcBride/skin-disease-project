@@ -1,13 +1,13 @@
 import DashboardHeader from './dashboard-header';
 import DashboardNav from './dashboard-nav';
-import DashboardChat from './dashboard-chat';
+import DashboardProfile from './dashboard-profile';
 
 const Chat = () => {
     return (
         <div id="body" className="grid-container">
            <DashboardHeader></DashboardHeader>
            <DashboardNav></DashboardNav>
-           <DashboardChat></DashboardChat>
+           <DashboardProfile></DashboardProfile>
         </div>
     );
 };
