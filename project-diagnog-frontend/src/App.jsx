@@ -6,6 +6,8 @@ import Login from './assets/Registration and login/login';
 import Loader from './assets/loader/loader';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Contact from './assets/About&Contact/contact';
+import Chat from './dashboard/chat';
+
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -26,6 +28,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/chat" element={<Chat />} />
         </Routes>
       )}
     </Router>
