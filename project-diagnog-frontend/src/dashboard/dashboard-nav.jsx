@@ -22,7 +22,7 @@ const DashboardNav = () => {
             <ul className='sidebar-list'>
                 <li className='sidebar-list-item'>
                 <MdDashboard className='icon'/>
-                <a href="">Dashboard</a>    
+                <Link to="/chat">Dashboard</Link>    
                 </li>
                 <li className="sidebar-list-item">
                 <FaStethoscope className='icon'/>
