@@ -28,6 +28,7 @@ const Register = () => {
         axios.post('http://localhost:8081/register', values)
         .then( () => {
           navigate('/landing');
+          alert('Welcome');
         }
         )
         .catch(err => console.log(err))  

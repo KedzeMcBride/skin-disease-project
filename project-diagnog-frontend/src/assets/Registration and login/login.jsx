@@ -17,23 +17,28 @@ const Login = () => {
   const handleInput = (event) => {
     setValues(prev => ({ ...prev, [event.target.name]: event.target.value }));
   };
-  const handleSubmit =(event) => {
+
+    const handleSubmit = (event) => {
     event.preventDefault();
     setErrors(Validation(values));
-    
-    if(errors.email ==="" && errors.password ===""){
+    console.log("Form values:", values); 
+    console.log("Validation errors:", errors); 
+
+    if (errors.email === "" && errors.password === "") {
       axios.post('http://localhost:8081/login', values)
-      .then(res => {
-        if(res.data === "LOGGED IN SUCCESSFULLY"){
-          Navigate('/landing');
-          alert('Welcome back');
-        }
-        else{
-          alert('User does not exist try Again');
-        }
-      })
-      .catch(err => console.log(err)); }
-};
+        .then(res => {
+          console.log("Response from server:", res.data); 
+          if (res.data === "LOGGED IN SUCCESSFULLY") {
+            Navigate('/landing');
+            alert('Welcome back');
+          } else {
+            alert(res.data); 
+            alert('Failed to Login');
+          }
+        })
+        .catch(err => console.log("Error:", err));
+    }
+  };
 
 
     return ( 
