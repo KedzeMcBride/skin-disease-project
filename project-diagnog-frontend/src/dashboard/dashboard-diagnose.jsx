@@ -31,7 +31,7 @@ const handleImageChange = (event) => {
         <img src={load} alt=""  className='img-display-before'/>}
         <input type="file" ref={inputRef} onChange={handleImageChange} style={{display:"none"}}/>
         </div>
-        <button className='image-upload-button'>Upload</button>
+        <button className='image-upload-button'>Process</button>
         </div>
         </div>
 

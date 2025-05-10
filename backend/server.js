@@ -74,6 +74,8 @@ app.post('/login', (req, res) => {
     });
 });
 
+//Area for chatting backend
+
 const server = http.createServer(app);
 
 server.on('clientError', (err, socket) => {
