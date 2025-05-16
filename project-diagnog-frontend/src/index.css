@@ -543,11 +543,12 @@ h5 {
   align-items: center;
   height: 100%; 
   width: 100%;  
+  margin-top: 40px;
 }
 
 .card {
-  width: 250px;
   display: flex;
+  width: 350px;
   flex-direction: column;
   height: 150px;
   gap: 5px;
@@ -738,6 +739,31 @@ h2 em {
     font-size: 15px;
   }
 }
+
+/*CSS FOR MAP*/
+.location {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  margin-top: 40px; 
+  margin-bottom: -100px;
+}
+
+.location h1 {
+  color: red;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.location > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+/*END CSS OF MAP*/
 
 /* css for footer */
 .footer {

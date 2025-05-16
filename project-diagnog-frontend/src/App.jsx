@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import 'leaflet/dist/leaflet.css';
 import Landing from './landing';
 import Register from './assets/Registration and login/register';
 import Login from './assets/Registration and login/login';
