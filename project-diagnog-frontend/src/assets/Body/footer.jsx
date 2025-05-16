@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import logo from '../images/logo.png';
 const Footer = () => {
     return ( 
@@ -20,7 +21,7 @@ const Footer = () => {
                                 <a href="">Contact</a>
                             </li>
                             <li>
-                            <button className="upload"><a href="">Logout</a></button>
+                            <button className="upload"><Link to="/login">Logout</Link></button>
                             </li>
                         </ul>
                     </div>
