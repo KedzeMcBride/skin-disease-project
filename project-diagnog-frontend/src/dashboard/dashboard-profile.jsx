@@ -1,9 +1,10 @@
 
 const DashboardProfile = () => {
     return (
-        <div className="dashboard-profile">
+        <div className="DashboardText-container">
         <div className="text-title">
-            <h1>Profile Area</h1>
+        <h1>Profile Area</h1>
+      
         </div>
         </div>
     );
