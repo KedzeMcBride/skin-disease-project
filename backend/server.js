@@ -76,8 +76,7 @@ app.post('/login', (req, res) => {
 
 app.get('/user/:email', (req, res) => {
     const { email } = req.params;
-    const sql = "SELECT name, email, profile_picture, address, city, state, zipCode, country FROM db_user WHERE email = ?";
-    db.query(sql, [email], (err, results) => {
+    const sql = "SELECT name, email, profile_picture, address, city, state, zipCode, country, phone, dateOfBirth FROM db_user WHERE email = ?";    db.query(sql, [email], (err, results) => {
         if (err) {
             console.error(err);
             return res.status(500).json({ message: "Failed to fetch user" });
@@ -91,15 +90,15 @@ app.get('/user/:email', (req, res) => {
 
 app.put('/user/:email', (req, res) => {
     const { email } = req.params;
-    const { name, profilePicture, address, city, state, zipCode, country } = req.body;
+    const { name, profilePicture, address, city, state, zipCode, country, phone, dateOfBirth } = req.body;
     const sql = `
         UPDATE db_user 
-        SET name = ?, profile_picture = ?, address = ?, city = ?, state = ?, zipCode = ?, country = ?
+        SET name = ?, profile_picture = ?, address = ?, city = ?, state = ?, zipCode = ?, country = ?, phone = ?, dateOfBirth = ?
         WHERE email = ?
     `;
     db.query(
         sql,
-        [name, profilePicture, address, city, state, zipCode, country, email],
+        [name, profilePicture, address, city, state, zipCode, country, phone, dateOfBirth, email], // <-- FIXED
         (err, result) => {
             if (err) {
                 console.error(err);

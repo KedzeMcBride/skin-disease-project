@@ -7,34 +7,34 @@ const DashboardPersonnels = () => {
     {
       id: 1,
       name: "Dr. Leah",
-      specialty: "Cardiology",
+      specialty: "Pediatric Dermatologist",
       availability: "Available",
       schedule: "Mon-Fri: 9:00 AM - 5:00 PM",
-      image: "/api/placeholder/80/80"
+      image: "/images/dr-leah.jpg"
     },
     {
       id: 2,
       name: "Dr. Vanessa",
-      specialty: "Dermatology", 
+      specialty: "Cosmetic Dermatology", 
       availability: "Unavailable",
       schedule: "Mon-Tue: 10:00 AM - 4:00 PM",
-      image: "/api/placeholder/80/80"
+      image: "/images/dr-vanne.jpg"
     },
     {
       id: 3,
       name: "Dr. Neba",
-      specialty: "Pediatrics",
+      specialty: "Surgical Dermatologist",
       availability: "Available",
       schedule: "Wed-Fri: 8:00 AM - 3:00 PM",
-      image: "/api/placeholder/80/80"
+      image: "/images/dr-neba.jpg"
     },
     {
       id: 4,
       name: "Dr. Henry",
-      specialty: "Orthopedics",
+      specialty: "Mohs Sergeon",
       availability: "Available", 
       schedule: "Mon-Thu: 11:00 AM - 6:00 PM",
-      image: "/api/placeholder/80/80"
+      image: "/images/doc-hen.jpg"
     }
   ];
 

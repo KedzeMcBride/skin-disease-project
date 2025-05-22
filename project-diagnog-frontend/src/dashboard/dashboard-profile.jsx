@@ -18,12 +18,13 @@ useEffect(() => {
   if (userInfo.email) {
     axios.get(`http://localhost:8081/user/${encodeURIComponent(userInfo.email)}`)
       .then(res => {
-        console.log("Fetched profile picture:", res.data.profile_picture);
         setUserInfo(prev => ({
           ...prev,
           name: res.data.name,
           email: res.data.email,
-          profilePicture: res.data.profile_picture, // just assign directly!
+          profilePicture: res.data.profile_picture,
+          phone: res.data.phone || '',                // <-- Add this line
+          dateOfBirth: res.data.dateOfBirth || '',     // <-- And this line
         }));
         setLocationInfo(prev => ({
           ...prev,
@@ -47,12 +48,14 @@ useEffect(() => {
 const handleSaveUserInfo = () => {
   axios.put(`http://localhost:8081/user/${encodeURIComponent(userInfo.email)}`, {
     name: userInfo.name,
-    profilePicture: userInfo.profilePicture, // base64 string
+    profilePicture: userInfo.profilePicture,
     address: locationInfo.address,
     city: locationInfo.city,
     state: locationInfo.state,
     zipCode: locationInfo.zipCode,
-    country: locationInfo.country
+    country: locationInfo.country,
+    phone: userInfo.phone,
+    dateOfBirth: userInfo.dateOfBirth
   })
   .then(() => {
     alert('Profile updated!');
