@@ -10,6 +10,7 @@ import Contact from './assets/About&Contact/contact';
 import Chat from './dashboard/chat';
 import Text from './dashboard/text';
 import Diagnose from './dashboard/diagnose';
+import Personnels from './dashboard/personnels';
 
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
           <Route path="/chat" element={<Chat />} />
           <Route path="/text" element={<Text />} />
           <Route path="/diagnose" element={<Diagnose />} />
+          <Route path="/personnels" element={<Personnels />} />
         </Routes>
       )}
     </Router>

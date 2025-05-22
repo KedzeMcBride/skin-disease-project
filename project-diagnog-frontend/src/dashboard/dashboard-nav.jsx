@@ -34,7 +34,7 @@ const DashboardNav = () => {
                 </li>
                 <li className="sidebar-list-item">
                 <BsPeopleFill className='icon'/>
-                <a href="">Available Personnels</a>   
+                <Link to="/personnels">Available Personnels</Link>   
                 </li>
                 <li className="sidebar-list-item">
                 <BsChatDots className='icon'/>

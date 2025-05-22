@@ -23,7 +23,7 @@ const DashboardText = () => {
         { id: 2, text: 'How are you doing today?', sender: 'them', timestamp: '10:31 AM', type: 'text' },
         { id: 3, text: 'I\'m doing great! Thanks for asking 😊', sender: 'me', timestamp: '10:35 AM', type: 'text' },
         { id: 4, text: 'That\'s awesome to hear!', sender: 'them', timestamp: '10:36 AM', type: 'text' },
-        { id: 5, text: 'Want to grab coffee later?', sender: 'them', timestamp: '2m ago', type: 'text' }
+        { id: 5, text: 'What time are you free for the check-up?', sender: 'them', timestamp: '2m ago', type: 'text' }
       ]
     },
     {
