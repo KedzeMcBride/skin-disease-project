@@ -212,9 +212,9 @@ const DashboardPersonnels = () => {
 
   return (
     <div id="DashboardText-container">
+    <div className="text-title"><h1>Personnels Info</h1></div>
     <div style={styles.container}>
       {/* Header */}
-        <div className="text-title"><h1>Personnels Info</h1></div>
       {/* Personnel Grid */}
       <div style={styles.grid}>
         {medicalPersonnel.map((person) => (
