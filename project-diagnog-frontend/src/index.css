@@ -1471,6 +1471,24 @@ h2 em {
 .icon, .icon_header{
   margin-right: 5px;
 }
+.notification-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  background: red;
+  border-radius: 50%;
+  animation: pulse-notify 1.2s infinite;
+  box-shadow: 0 0 8px 2px rgba(255,0,0,0.5);
+  z-index: 2;
+}
+
+@keyframes pulse-notify {
+  0% { opacity: 1; box-shadow: 0 0 8px 2px rgba(255,0,0,0.7);}
+  50% { opacity: 0.5; box-shadow: 0 0 16px 6px rgba(255,0,0,1);}
+  100% { opacity: 1; box-shadow: 0 0 8px 2px rgba(255,0,0,0.7);}
+}
 /* End Header*/
 
 /* CSS for side bar */

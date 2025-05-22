@@ -17,7 +17,7 @@ const Navbar = () => {
                     <li><Link to="/landing">Home</Link></li>
                     <li><a href="">About</a></li>
                     <li><Link to="/contact">Contact</Link></li>
-                    <button className="upload"><img src={upload} alt="" className="cloud" /><a href="">Book Session</a></button>
+                    <button className="upload"><img src={upload} alt="" className="cloud" /><Link to="/personnels">Book Session</Link></button>
                 </ul>
             </div>
         </>

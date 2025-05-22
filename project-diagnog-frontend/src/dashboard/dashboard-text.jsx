@@ -14,7 +14,7 @@ const DashboardText = () => {
       name: 'Dr Leah',
       username: '@leah_c',
       avatar: '/images/dr-leah.jpg',
-      lastMessage: 'Hey! How are you doing?',
+      lastMessage: 'What time are you free for the check-up?',
       timestamp: '2m',
       unread: 2,
       online: true,
@@ -31,15 +31,15 @@ const DashboardText = () => {
       name: 'Dr Vanne',
       username: '@Kevana_d',
       avatar: '/images/dr-vanne.jpg',
-      lastMessage: 'Thanks for the help!',
+      lastMessage: 'Medical Booklets!',
       timestamp: '1h',
       unread: 0,
       online: false,
       messages: [
-        { id: 1, text: 'Could you help me with the project?', sender: 'them', timestamp: '2:00 PM', type: 'text' },
-        { id: 2, text: 'Of course! What do you need help with?', sender: 'me', timestamp: '2:05 PM', type: 'text' },
-        { id: 3, text: 'Thanks for the help!', sender: 'them', timestamp: '1h ago', type: 'text' },
-        { id: 4, text: '❤️', sender: 'me', timestamp: '1h ago', type: 'reaction' }
+        { id: 1, text: 'Could you Come Along with past report?', sender: 'them', timestamp: '2:00 PM', type: 'text' },
+        { id: 2, text: 'Of course! Doc What do you need?', sender: 'me', timestamp: '2:05 PM', type: 'text' },
+        { id: 3, text: 'Medical Booklets!', sender: 'them', timestamp: '1h ago', type: 'text' },
+        { id: 4, text: '👌', sender: 'me', timestamp: '1h ago', type: 'reaction' }
       ]
     },
     {

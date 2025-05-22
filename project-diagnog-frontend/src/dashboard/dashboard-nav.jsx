@@ -42,7 +42,7 @@ const DashboardNav = () => {
                 </li>
                 <li className="sidebar-list-item">
                 <BsGearFill className='icon'/>
-                <a href="">Settings</a>
+                <Link to="/setting">Settings</Link>
                 </li>
                 <li className="sidebar-list-item">
                 <BsBarChartFill className='icon'/>

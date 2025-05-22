@@ -11,6 +11,7 @@ import Chat from './dashboard/chat';
 import Text from './dashboard/text';
 import Diagnose from './dashboard/diagnose';
 import Personnels from './dashboard/personnels';
+import Setting from './dashboard/setting';
 
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
           <Route path="/text" element={<Text />} />
           <Route path="/diagnose" element={<Diagnose />} />
           <Route path="/personnels" element={<Personnels />} />
+          <Route path="/setting" element={<Setting />} />
         </Routes>
       )}
     </Router>
