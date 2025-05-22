@@ -29,7 +29,7 @@ const handleImageChange = (event) => {
         <div onClick={handleImageClick}>
         {image ? <img src={URL.createObjectURL(image)} alt="" className='img-display-after'/>: 
         <img src={load} alt=""  className='img-display-before'/>}
-        <input type="file" ref={inputRef} onChange={handleImageChange} style={{display:"none"}}/>
+        <input type="file" ref={inputRef} onChange={handleImageChange} style={{display:"none"}} accept='image/*' capture="user"/>
         </div>
         <button className='image-upload-button'>Process</button>
         </div>

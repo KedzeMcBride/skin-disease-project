@@ -15,7 +15,7 @@ const db = mysql.createConnection({
     database: "skin_diagnostic_system",
 });
 
-
+//Registration area begin
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
 
@@ -74,6 +74,8 @@ app.post('/login', (req, res) => {
     });
 });
 
+// getting user details from db_user table
+// and sending it to the frontend
 app.get('/user/:email', (req, res) => {
     const { email } = req.params;
     const sql = "SELECT name, email, profile_picture, address, city, state, zipCode, country, phone, dateOfBirth FROM db_user WHERE email = ?";    db.query(sql, [email], (err, results) => {
@@ -88,6 +90,8 @@ app.get('/user/:email', (req, res) => {
     });
 });
 
+// Update user details in db_user table
+// and send the updated data back to the frontend
 app.put('/user/:email', (req, res) => {
     const { email } = req.params;
     const { name, profilePicture, address, city, state, zipCode, country, phone, dateOfBirth } = req.body;
