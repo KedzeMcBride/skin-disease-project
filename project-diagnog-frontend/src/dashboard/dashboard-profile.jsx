@@ -11,27 +11,37 @@ const DashboardProfile = () => {
     email: storedEmail,
     phone: '+237',
     dateOfBirth: '13/07/2004',
-    profilePicture: null
+    profilePicture: '',
   });
   //collecting user data from the database
-  useEffect(() => {
-    if (userInfo.email) {
-      axios.get(`http://localhost:8081/user/${encodeURIComponent(userInfo.email)}`)
-        .then(res => {
-          setUserInfo(prev => ({
-            ...prev,
-            name: res.data.name,
-            email: res.data.email
-          }));
-        })
-        .catch(() => {
-          setUserInfo(prev => ({
-            ...prev,
-            name: prev.name || 'John Doe'
-          }));
-        });
-    }
-  }, [userInfo.email]);
+useEffect(() => {
+  if (userInfo.email) {
+    axios.get(`http://localhost:8081/user/${encodeURIComponent(userInfo.email)}`)
+      .then(res => {
+        console.log("Fetched profile picture:", res.data.profile_picture);
+        setUserInfo(prev => ({
+          ...prev,
+          name: res.data.name,
+          email: res.data.email,
+          profilePicture: res.data.profile_picture, // just assign directly!
+        }));
+        setLocationInfo(prev => ({
+          ...prev,
+          address: res.data.address || '',
+          city: res.data.city || '',
+          state: res.data.state || '',
+          zipCode: res.data.zipCode || '',
+          country: res.data.country || ''
+        }));
+      })
+      .catch(() => {
+        setUserInfo(prev => ({
+          ...prev,
+          name: prev.name || 'John Doe'
+        }));
+      });
+  }
+}, [userInfo.email]);
 
   // code to update profile
 const handleSaveUserInfo = () => {
@@ -450,11 +460,9 @@ const handleSaveUserInfo = () => {
             <div style={styles.profilePictureContainer}>
               <div style={styles.profilePictureWrapper}>
                 <div style={styles.profilePicture}>
-                  {userInfo.profilePicture ? (
-                    <img src={userInfo.profilePicture} alt="Profile" style={styles.profileImage} />
-                  ) : (
-                    <User size={48} color="#9ca3af" />
-                  )}
+                {userInfo.profilePicture && userInfo.profilePicture.startsWith('data:image') ? (
+                <img src={userInfo.profilePicture} alt="Profile" style={styles.profileImage} />) : (
+                <User size={48} color="#9ca3af" />)}
                 </div>
                 <button
                   onClick={() => fileInputRef.current?.click()}

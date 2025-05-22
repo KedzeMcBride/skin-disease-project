@@ -76,7 +76,7 @@ app.post('/login', (req, res) => {
 
 app.get('/user/:email', (req, res) => {
     const { email } = req.params;
-    const sql = "SELECT name, email FROM db_user WHERE email = ?";
+    const sql = "SELECT name, email, profile_picture, address, city, state, zipCode, country FROM db_user WHERE email = ?";
     db.query(sql, [email], (err, results) => {
         if (err) {
             console.error(err);
@@ -85,7 +85,6 @@ app.get('/user/:email', (req, res) => {
         if (results.length === 0) {
             return res.status(404).json({ message: "User not found" });
         }
-        // Return the first user found
         return res.status(200).json(results[0]);
     });
 });
