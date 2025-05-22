@@ -27,13 +27,14 @@ const Login = () => {
     if (errors.email === "" && errors.password === "") {
       axios.post('http://localhost:8081/login', values)
         .then(res => {
-          console.log("Response from server:", res.data); 
-          if (res.data === "LOGGED IN SUCCESSFULLY") {
+          console.log("Response from server:", res.data && res.data.name && res.data.email); 
+         if (res.data && res.data.message === "LOGGED IN SUCCESSFULLY") {
+            localStorage.setItem('userName', res.data.name);
+            localStorage.setItem('userEmail', res.data.email);
             Navigate('/landing');
             alert('Welcome back');
           } else {
-            alert(res.data); 
-            alert('Failed to Login');
+            alert(res.data.message || 'Failed to Login');
           }
         })
         .catch(err => console.log("Error:", err));

@@ -58,7 +58,7 @@ app.post('/login', (req, res) => {
 
                 if (isMatch) {
                     console.log("Login successful for user:", email);
-                    return res.status(200).json("LOGGED IN SUCCESSFULLY");
+                    return res.status(200).json({message:"LOGGED IN SUCCESSFULLY", name: data[0].name, email: data[0].email });
                 } else {
                     console.log("Invalid credentials for user:", email);
                     return res.status(401).json("INVALID CREDENTIALS");
@@ -74,7 +74,42 @@ app.post('/login', (req, res) => {
     });
 });
 
-//Area for chatting backend
+app.get('/user/:email', (req, res) => {
+    const { email } = req.params;
+    const sql = "SELECT name, email FROM db_user WHERE email = ?";
+    db.query(sql, [email], (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Failed to fetch user" });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        // Return the first user found
+        return res.status(200).json(results[0]);
+    });
+});
+
+app.put('/user/:email', (req, res) => {
+    const { email } = req.params;
+    const { name, profilePicture, address, city, state, zipCode, country } = req.body;
+    const sql = `
+        UPDATE db_user 
+        SET name = ?, profile_picture = ?, address = ?, city = ?, state = ?, zipCode = ?, country = ?
+        WHERE email = ?
+    `;
+    db.query(
+        sql,
+        [name, profilePicture, address, city, state, zipCode, country, email],
+        (err, result) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ message: "Failed to update user" });
+            }
+            return res.status(200).json({ message: "User updated successfully" });
+        }
+    );
+});
 
 const server = http.createServer(app);
 

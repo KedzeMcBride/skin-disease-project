@@ -1,47 +1,90 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Camera, Edit2, Save, X, Plus, MapPin, Phone, Mail, User, Calendar, FileText } from 'lucide-react';
+import axios from 'axios';
+
 
 const DashboardProfile = () => {
   // Mock user data - replace with actual data from your database
+  const storedEmail = localStorage.getItem('userEmail') || '';
   const [userInfo, setUserInfo] = useState({
-    name: 'John Doe',
-    email: 'john.doe@email.com',
-    phone: '+1 (555) 123-4567',
-    dateOfBirth: '1990-05-15',
+    name: '',
+    email: storedEmail,
+    phone: '+237',
+    dateOfBirth: '13/07/2004',
     profilePicture: null
   });
+  //collecting user data from the database
+  useEffect(() => {
+    if (userInfo.email) {
+      axios.get(`http://localhost:8081/user/${encodeURIComponent(userInfo.email)}`)
+        .then(res => {
+          setUserInfo(prev => ({
+            ...prev,
+            name: res.data.name,
+            email: res.data.email
+          }));
+        })
+        .catch(() => {
+          setUserInfo(prev => ({
+            ...prev,
+            name: prev.name || 'John Doe'
+          }));
+        });
+    }
+  }, [userInfo.email]);
+
+  // code to update profile
+const handleSaveUserInfo = () => {
+  axios.put(`http://localhost:8081/user/${encodeURIComponent(userInfo.email)}`, {
+    name: userInfo.name,
+    profilePicture: userInfo.profilePicture, // base64 string
+    address: locationInfo.address,
+    city: locationInfo.city,
+    state: locationInfo.state,
+    zipCode: locationInfo.zipCode,
+    country: locationInfo.country
+  })
+  .then(() => {
+    alert('Profile updated!');
+    setIsEditing(prev => ({ ...prev, userInfo: false, location: false }));
+  })
+  .catch(err => {
+    alert('Failed to update profile');
+    console.error(err);
+  });
+};
 
   const [contacts, setContacts] = useState([
     {
       id: 1,
       type: 'Emergency Contact',
-      name: 'Jane Doe',
-      relationship: 'Spouse',
-      phone: '+1 (555) 987-6543',
-      email: 'jane.doe@email.com'
+      name: 'kedze Vanessa',
+      relationship: 'Sister',
+      phone: '+237 672592733',
+      email: 'vanne.doe@email.com'
     },
     {
       id: 2,
       type: 'Doctor',
-      name: 'Dr. Smith',
+      name: 'Dr. Leah',
       relationship: 'Primary Care Physician',
-      phone: '+1 (555) 111-2222',
-      email: 'dr.smith@clinic.com'
+      phone: '+237 651820548',
+      email: 'dr.leah@clinic.com'
     }
   ]);
 
   const [locationInfo, setLocationInfo] = useState({
-    address: '123 Main Street',
-    city: 'New York',
-    state: 'NY',
+    address: '123 Malingo Street',
+    city: 'Buea',
+    state: 'Bu',
     zipCode: '10001',
-    country: 'United States'
+    country: 'Cameroon'
   });
 
   const [skinConditions, setSkinConditions] = useState([
     {
       id: 1,
-      condition: 'Acne',
+      condition: 'Ringworm',
       diagnosedDate: '2023-01-15',
       severity: 'Moderate',
       treatment: 'Topical retinoids',
@@ -387,7 +430,13 @@ const DashboardProfile = () => {
                 Profile Information
               </h2>
               <button
-                onClick={() => handleEditToggle('userInfo')}
+                onClick={() => {
+                  if (isEditing.userInfo) {
+                    handleSaveUserInfo();
+                  } else {
+                    handleEditToggle('userInfo');
+                  }
+                }}
                 style={{...styles.button, ...styles.buttonBlue}}
                 onMouseOver={(e) => e.target.style.backgroundColor = '#2563eb'}
                 onMouseOut={(e) => e.target.style.backgroundColor = '#3b82f6'}
