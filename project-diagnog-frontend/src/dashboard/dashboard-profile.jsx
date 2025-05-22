@@ -13,7 +13,8 @@ const DashboardProfile = () => {
     dateOfBirth: '13/07/2004',
     profilePicture: '',
   });
-  //collecting user data from the database
+
+//collecting user data from the database
 useEffect(() => {
   if (userInfo.email) {
     axios.get(`http://localhost:8081/user/${encodeURIComponent(userInfo.email)}`)
@@ -23,8 +24,8 @@ useEffect(() => {
           name: res.data.name,
           email: res.data.email,
           profilePicture: res.data.profile_picture,
-          phone: res.data.phone || '',                // <-- Add this line
-          dateOfBirth: res.data.dateOfBirth || '',     // <-- And this line
+          phone: res.data.phone || '',                
+          dateOfBirth: res.data.dateOfBirth || '',     
         }));
         setLocationInfo(prev => ({
           ...prev,
