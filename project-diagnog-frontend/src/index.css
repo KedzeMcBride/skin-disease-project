@@ -1706,3 +1706,82 @@ cursor: pointer;
   width: 200px;
 }
 /* CSS image upload end*/
+/* CSS for admin */
+/* Admin Sidebar Styles */
+.admin-sidebar {
+  width: 260px;
+  background: #fff;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.04);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.admin-sidebar-header {
+  padding: 24px 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-sidebar-header h2 {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin: 0;
+}
+
+.admin-sidebar-nav {
+  flex: 1;
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-sidebar-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 14px 24px;
+  background: none;
+  border: none;
+  outline: none;
+  text-align: left;
+  font-size: 1rem;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.admin-sidebar-btn .admin-sidebar-icon {
+  margin-right: 14px;
+}
+
+.admin-sidebar-btn:hover,
+.admin-sidebar-btn.active {
+  background: #e0e7ff;
+  color: #2563eb;
+  border-right: 4px solid #2563eb;
+}
+
+.admin-sidebar-btn.active {
+  font-weight: bold;
+}
+
+.admin-sidebar-logout {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  border-top: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+.admin-sidebar-btn.logout {
+  color: #dc2626;
+  background: none;
+}
+
+.admin-sidebar-btn.logout:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+/* End Admin Sidebar Styles */

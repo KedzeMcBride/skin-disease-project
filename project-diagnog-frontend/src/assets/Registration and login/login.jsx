@@ -28,7 +28,7 @@ const handleSubmit = (event) => {
       .then(res => {
         if (isAdmin && res.data.message === "ADMIN LOGGED IN") {
           localStorage.setItem('adminEmail', res.data.email);
-          Navigate('/admin/dashboard'); // Make sure this route exists
+          Navigate('/admindashboard'); // Make sure this route exists
           alert('Welcome Admin');
         } else if (!isAdmin && res.data.message === "LOGGED IN SUCCESSFULLY") {
           localStorage.setItem('userName', res.data.name);

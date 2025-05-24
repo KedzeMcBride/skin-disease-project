@@ -12,6 +12,8 @@ import Text from './dashboard/text';
 import Diagnose from './dashboard/diagnose';
 import Personnels from './dashboard/personnels';
 import Setting from './dashboard/setting';
+import AdminDashboard from './AdminDashboard/admindashboard';
+
 
 
 function App() {
@@ -38,6 +40,7 @@ function App() {
           <Route path="/diagnose" element={<Diagnose />} />
           <Route path="/personnels" element={<Personnels />} />
           <Route path="/setting" element={<Setting />} />
+          <Route path="/admindashboard" element={<AdminDashboard />} />
         </Routes>
       )}
     </Router>

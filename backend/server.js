@@ -112,19 +112,24 @@ app.put('/user/:email', (req, res) => {
         }
     );
 });
+
 // LOGIN SPECIALLY FOR ADMIN
 app.post('/admin/login', (req, res) => {
     const { email, password } = req.body;
-    const sql = "SELECT * FROM db_administrator WHERE email = ?";
+    console.log("Admin login request received:", req.body); // Log the request body 
+
+    const sql = "SELECT * FROM db_administrator WHERE admin_email = ?";
     db.query(sql, [email], (err, data) => {
         if (err) {
             console.error("Admin login DB error:", err);
             return res.status(500).json({ message: "Server error" });
         }
         if (data.length > 0) {
+            console.log("Admin found:", data[0].admin_email); // Log the found admin email
+            console.log("Plain text password:", password);
             // Compare plain text password
-            if (password === data[0].password) {
-                return res.status(200).json({ message: "ADMIN LOGGED IN", email: data[0].email });
+            if (password === data[0].admin_password) {
+                return res.status(200).json({ message: "ADMIN LOGGED IN", email: data[0].admin_email });
             } else {
                 return res.status(401).json({ message: "INVALID ADMIN CREDENTIALS" });
             }
