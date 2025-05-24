@@ -2,7 +2,7 @@ import AdminSidebar from "./adminsidebar";
 
 const AdminDashboard = () => {
     return (
-        <div id="body" className="grid-container">
+        <div id="" className="grid-container">
         <AdminSidebar></AdminSidebar>
         </div>
     );
