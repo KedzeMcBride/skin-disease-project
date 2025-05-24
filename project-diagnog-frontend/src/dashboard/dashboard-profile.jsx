@@ -161,20 +161,39 @@ const handleSaveUserInfo = () => {
     }
   };
 
-  const handleAddCondition = () => {
-    if (newCondition.condition && newCondition.diagnosedDate) {
-      setSkinConditions(prev => [...prev, { ...newCondition, id: Date.now() }]);
-      setNewCondition({ condition: '', diagnosedDate: '', severity: '', treatment: '', status: '' });
-    }
-  };
+const handleAddCondition = () => {
+  if (newCondition.condition && newCondition.diagnosedDate) {
+    axios.post(`http://localhost:8081/db_user/${userInfo.email}/conditions`, newCondition)
+      .then(res => {
+        setSkinConditions(prev => [
+          ...prev,
+          { ...newCondition, id: res.data.id }
+        ]);
+        setNewCondition({ conditions: '', diagnosedDate: '', severity: '', treatment: '', status: '' });
+      })
+      .catch(() => alert('Failed to add condition'));
+  }
+};
+
+useEffect(() => {
+  if (userInfo.email) {
+    axios.get(`http://localhost:8081/db_user/${encodeURIComponent(userInfo.email)}/conditions`)
+      .then(res => setSkinConditions(res.data))
+      .catch(() => setSkinConditions([]));
+  }
+}, [userInfo.email]);
 
   const handleRemoveContact = (id) => {
     setContacts(prev => prev.filter(contact => contact.id !== id));
   };
 
-  const handleRemoveCondition = (id) => {
-    setSkinConditions(prev => prev.filter(condition => condition.id !== id));
-  };
+const handleRemoveCondition = (id) => {
+  axios.delete(`http://localhost:8081/db_user/${userInfo.email}/conditions/${id}`)
+    .then(() => {
+      setSkinConditions(prev => prev.filter(condition => condition.id !== id));
+    })
+    .catch(() => alert('Failed to delete condition'));
+};
 
   const styles = {
     container: {
@@ -848,7 +867,7 @@ const handleSaveUserInfo = () => {
               {skinConditions.map((condition) => (
                 <div key={condition.id} style={styles.conditionCard}>
                   <div style={styles.conditionHeader}>
-                    <h3 style={styles.contactName}>{condition.condition}</h3>
+                    <h3 style={styles.contactName}>{condition.conditions}</h3>
                     <div style={{display: 'flex', alignItems: 'center'}}>
                       <span style={{
                         ...styles.statusBadge,

@@ -112,6 +112,53 @@ app.put('/user/:email', (req, res) => {
         }
     );
 });
+//POST FOR STORING USER CONDITIONS
+app.post('/db_user/:email/conditions', (req, res) => {
+    const { email } = req.params;
+    const { condition, diagnosedDate, severity, treatment, status } = req.body;
+    const sql = `
+        INSERT INTO user_conditions (email, conditions, diagnosedDate, severity, treatment, status)
+        VALUES (?, ?, ?, ?, ?, ?)
+    `;
+    db.query(sql, [email, condition, diagnosedDate, severity, treatment, status], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Failed to add condition" });
+        }
+        return res.status(200).json({ message: "Condition added successfully", id: result.insertId });
+    });
+});
+// Endpoint to store user conditions
+
+// GET user conditions
+app.get('/db_user/:email/conditions', (req, res) => {
+    const { email } = req.params;
+    const sql = "SELECT * FROM user_conditions WHERE email = ?";
+    db.query(sql, [email], (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Failed to fetch conditions" });
+        }
+        return res.status(200).json(results);
+    });
+});
+// GET endpoint to retrieve user conditions
+
+
+//Delete user conditions
+app.delete('/db_user/:email/conditions/:id', (req, res) => {
+    const { id } = req.params;
+    const sql = "DELETE FROM user_conditions WHERE id = ?";
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Failed to delete condition" });
+        }
+        return res.status(200).json({ message: "Condition deleted successfully" });
+    });
+});
+//End of delete user conditions
+
 
 // LOGIN SPECIALLY FOR ADMIN
 app.post('/admin/login', (req, res) => {
