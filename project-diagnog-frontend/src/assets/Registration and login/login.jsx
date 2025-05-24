@@ -12,34 +12,35 @@ const Login = () => {
     email: '',
     password: '',
   })
+  const [isAdmin, setIsAdmin] = useState(false);
   const Navigate = useNavigate();
   const [errors, setErrors] = useState({})
   const handleInput = (event) => {
     setValues(prev => ({ ...prev, [event.target.name]: event.target.value }));
   };
 
-    const handleSubmit = (event) => {
-    event.preventDefault();
-    setErrors(Validation(values));
-    console.log("Form values:", values); 
-    console.log("Validation errors:", errors); 
-
-    if (errors.email === "" && errors.password === "") {
-      axios.post('http://localhost:8081/login', values)
-        .then(res => {
-          console.log("Response from server:", res.data && res.data.name && res.data.email); 
-         if (res.data && res.data.message === "LOGGED IN SUCCESSFULLY") {
-            localStorage.setItem('userName', res.data.name);
-            localStorage.setItem('userEmail', res.data.email);
-            Navigate('/landing');
-            alert('Welcome back');
-          } else {
-            alert(res.data.message || 'Failed to Login');
-          }
-        })
-        .catch(err => console.log("Error:", err));
-    }
-  };
+const handleSubmit = (event) => {
+  event.preventDefault();
+  setErrors(Validation(values));
+  if (errors.email === "" && errors.password === "") {
+    const url = isAdmin ? 'http://localhost:8081/admin/login' : 'http://localhost:8081/login';
+    axios.post(url, values)
+      .then(res => {
+        if (isAdmin && res.data.message === "ADMIN LOGGED IN") {
+          localStorage.setItem('adminEmail', res.data.email);
+          Navigate('/admin/dashboard'); // Make sure this route exists
+          alert('Welcome Admin');
+        } else if (!isAdmin && res.data.message === "LOGGED IN SUCCESSFULLY") {
+          localStorage.setItem('userName', res.data.name);
+          localStorage.setItem('userEmail', res.data.email);
+          Navigate('/landing');
+          alert('Welcome back');
+        } else {
+          alert(res.data.message || 'Failed to Login');
+        }
+      })
+        .catch(err => console.log("Error:", err));  }
+};
 
 
     return ( 
@@ -95,8 +96,8 @@ const Login = () => {
 </div>
 <div className="flex-row">
   <div>
-    <input type="checkbox" />
-    <label>Remember me </label>
+    <input type="checkbox" checked={isAdmin} onChange={() => setIsAdmin(!isAdmin)} />
+    <label>Login as Admin</label>
   </div>
   <span className="span"><a href="">Forgot password?</a></span>
 </div>

@@ -254,6 +254,7 @@ const DashboardSetting = () => {
                 .btn-orange {
                     background-color: #f97316;
                     color: white;
+                    width: 150px;
                 }
 
                 .btn-orange:hover {
@@ -263,6 +264,7 @@ const DashboardSetting = () => {
                 .btn-gray {
                     background-color: #6b7280;
                     color: white;
+                    width: 150px;
                 }
 
                 .btn-gray:hover {
@@ -272,6 +274,7 @@ const DashboardSetting = () => {
                 .btn-red {
                     background-color: #ef4444;
                     color: white;
+                    width: 150px;
                 }
 
                 .btn-red:hover {

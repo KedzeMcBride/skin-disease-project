@@ -40,7 +40,7 @@ app.post('/register', async (req, res) => {
 // Login endpoint with password comparison
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
-    console.log("Login request received:", req.body); // Debug incoming request
+    console.log("Login request received:", req.body); 
 
     const sql = "SELECT * FROM db_user WHERE email = ?";
     db.query(sql, [email], async (err, data) => {
@@ -112,6 +112,29 @@ app.put('/user/:email', (req, res) => {
         }
     );
 });
+// LOGIN SPECIALLY FOR ADMIN
+app.post('/admin/login', (req, res) => {
+    const { email, password } = req.body;
+    const sql = "SELECT * FROM db_administrator WHERE email = ?";
+    db.query(sql, [email], (err, data) => {
+        if (err) {
+            console.error("Admin login DB error:", err);
+            return res.status(500).json({ message: "Server error" });
+        }
+        if (data.length > 0) {
+            // Compare plain text password
+            if (password === data[0].password) {
+                return res.status(200).json({ message: "ADMIN LOGGED IN", email: data[0].email });
+            } else {
+                return res.status(401).json({ message: "INVALID ADMIN CREDENTIALS" });
+            }
+        } else {
+            return res.status(404).json({ message: "ADMIN NOT FOUND" });
+        }
+    });
+});
+
+
 
 const server = http.createServer(app);
 
