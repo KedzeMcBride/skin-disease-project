@@ -19,7 +19,7 @@ const AdminUsers = () => {
   });
   const [appointmentIds, setAppointmentIds] = useState([]);
 
-  // Fetching total users and other stats
+// Fetching total users and other stats
 useEffect(() => {
     axios.get('http://localhost:8081/admin/total-users')
       .then(res => {
@@ -29,13 +29,13 @@ useEffect(() => {
         }));
       })
       .catch(() => {
-        // fallback or error handling
         setStats(prev => ({
           ...prev,
           totalUsers: 0
         }));
       });
 // End of fetching total users
+
 // Fetching active users and other stats
   axios.get('http://localhost:8081/admin/active-users')
     .then(res => {

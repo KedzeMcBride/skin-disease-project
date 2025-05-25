@@ -1,4 +1,6 @@
 import  { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
+
 import { 
   Users, 
   UserCheck, 
@@ -9,10 +11,11 @@ import {
 
 const AdminSidebar = () => {
   const [activeSection, setActiveSection] = useState('patients');
+  const navigate = useNavigate();
 
   const navigationItems = [
-    { id: 'patients', label: 'Patients', icon: Users },
-    { id: 'doctors', label: 'Doctors', icon: UserCheck },
+    { id: 'patients', label: 'Patients', icon: Users, route: '/admindashboard' },
+    { id: 'doctors', label: 'Doctors', icon: UserCheck, route: '/admindoctor' },
     { id: 'sent-bookings', label: 'Sent Bookings', icon: Calendar },
     { id: 'assigned-bookings', label: 'Bookings Assigned', icon: CalendarCheck },
   ];
@@ -106,7 +109,9 @@ const AdminSidebar = () => {
           return (
             <button
               key={item.id}
-              onClick={() => setActiveSection(item.id)}
+              onClick={() => {setActiveSection(item.id);
+              if (item.route) navigate(item.route);
+              }}
               style={{
                 ...styles.navButton,
                 ...(isActive ? styles.navButtonActive : {})
