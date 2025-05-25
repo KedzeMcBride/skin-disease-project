@@ -92,6 +92,7 @@ const AdminSidebar = () => {
   };
 
   return (
+    <aside id="sidebar"> 
     <div style={styles.sidebar}>
       <div style={styles.header}>
         <h2 style={styles.title}>Admin Panel</h2>
@@ -145,6 +146,7 @@ const AdminSidebar = () => {
         </div>
       </nav>
     </div>
+  </aside>
   );
 };
 
