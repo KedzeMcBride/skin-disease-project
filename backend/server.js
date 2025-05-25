@@ -305,6 +305,31 @@ app.get('/admin/total-doctors', (req, res) => {
         return res.status(200).json({ total: results[0].total });
     });
 });
+// Endpoint to get total number of doctors
+
+// server code to add a new doctor
+app.post('/admin/doctors', (req, res) => {
+  const { name, specialty, email, phone, experience, active_status } = req.body;
+  const sql = `
+    INSERT INTO doctor (Doctor_name, specialty, email, phone, experience, active_status)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `;
+  db.query(sql, [name, specialty, email, phone, experience, active_status || 'Available'], (err, result) => {
+    if (err) return res.status(500).json({ message: "Failed to add doctor" });
+    res.status(200).json({ message: "Doctor added successfully", id: result.insertId });
+  });
+});
+// Endpoint to add a new doctor
+
+//Server code to delete a doctor
+app.delete('/admin/doctors/:id', (req, res) => {
+  const { id } = req.params;
+  db.query("DELETE FROM doctor WHERE id = ?", [id], (err) => {
+    if (err) return res.status(500).json({ message: "Failed to delete doctor" });
+    res.status(200).json({ message: "Doctor deleted successfully" });
+  });
+});
+// Endpoint to delete a doctor
 
 // Get all active doctors (active_status = 'Available')
 app.get('/admin/active-doctors', (req, res) => {
@@ -318,7 +343,6 @@ app.get('/admin/active-doctors', (req, res) => {
     });
 });
 // Get all appointments
-
 app.get('/admin/appointments', (req, res) => {
     const sql = `
         SELECT 
