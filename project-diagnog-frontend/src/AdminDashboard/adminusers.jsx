@@ -129,7 +129,7 @@ setTimeout(() => {
       bgColor: '#fef3c7'
     },
     {
-      title: 'Users Leaving',
+      title: 'in-active Users',
       value: stats.usersLeaving,
       icon: UserMinus,
       color: '#ef4444',
