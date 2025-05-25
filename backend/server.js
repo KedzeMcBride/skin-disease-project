@@ -253,6 +253,19 @@ app.get('/admin/active-users', (req, res) => {
       return res.status(200).json({ active: results[0].active });
   });
 });
+// endpoint to get total number of active users
+
+// Get total number of users undergoing treatment (unique emails in user_conditions)
+app.get('/admin/users-undergoing-treatment', (req, res) => {
+    const sql = "SELECT COUNT(DISTINCT email) AS total FROM user_conditions";
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Failed to fetch users undergoing treatment" });
+        }
+        return res.status(200).json({ total: results[0].total });
+    });
+});
 
 const server = http.createServer(app);
 

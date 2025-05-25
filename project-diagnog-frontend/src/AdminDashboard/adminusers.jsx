@@ -50,10 +50,25 @@ useEffect(() => {
       }));
     });
 
+
+// Fetch users undergoing treatment
+axios.get('http://localhost:8081/admin/users-undergoing-treatment')
+.then(res => {
+    setStats(prev => ({
+    ...prev,
+    usersUndergoingTreatment: res.data.total
+    }));
+    })
+    .catch(() => {
+      setStats(prev => ({
+        ...prev,
+        usersUndergoingTreatment: 0
+      }));
+    });
+
 setTimeout(() => {
       setStats(prev => ({
         ...prev,
-        usersUndergoingTreatment: 156,
         usersLeaving: 23,
         receivedAppointments: 67
       }));
