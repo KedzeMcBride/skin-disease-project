@@ -58,6 +58,7 @@ app.post('/login', (req, res) => {
 
                 if (isMatch) {
                     console.log("Login successful for user:", email);
+                    db.query("UPDATE db_user SET is_active = 1 WHERE id = ?", [data[0].id]);
                     return res.status(200).json({message:"LOGGED IN SUCCESSFULLY", id: data[0].id, name: data[0].name, email: data[0].email });
                 } else {
                     console.log("Invalid credentials for user:", email);
@@ -204,7 +205,54 @@ app.post('/admin/login', (req, res) => {
 });
 //END OF ADMIN LOGIN
 
+// Get total number of users and send to admin dashboard
+app.get('/admin/total-users', (req, res) => {
+    const sql = "SELECT COUNT(*) AS total FROM db_user";
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Failed to fetch user count" });
+        }
+        return res.status(200).json({ total: results[0].total });
+    });
+});
+//endpoint to get total number of users
 
+
+// Get total number of active users and send to admin dashboard
+app.get('/admin/total-users', (req, res) => {
+    const sql = "SELECT COUNT(*) AS total FROM db_user";
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Failed to fetch user count" });
+        }
+        return res.status(200).json({ total: results[0].total });
+    });
+});
+// Endpoint to get total number of active users
+
+//logout logic
+app.post('/logout', (req, res) => {
+  const { userId } = req.body;
+  db.query("UPDATE db_user SET is_active = 0 WHERE id = ?", [userId], (err) => {
+    if (err) return res.status(500).json({ message: "Logout failed" });
+    res.status(200).json({ message: "Logged out" });
+  });
+});
+// End of logout logic
+
+//start count active users
+app.get('/admin/active-users', (req, res) => {
+  const sql = "SELECT COUNT(*) AS active FROM db_user WHERE is_active = 1";
+  db.query(sql, (err, results) => {
+      if (err) {
+          console.error(err);
+          return res.status(500).json({ message: "Failed to fetch active user count" });
+      }
+      return res.status(200).json({ active: results[0].active });
+  });
+});
 
 const server = http.createServer(app);
 

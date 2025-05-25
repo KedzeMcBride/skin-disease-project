@@ -1,4 +1,5 @@
 import  { useState, useEffect } from 'react';
+import axios from 'axios';
 import { 
   Users, 
   UserCheck, 
@@ -17,20 +18,46 @@ const AdminUsers = () => {
     receivedAppointments: 0
   });
 
-  // Simulate loading data
-  useEffect(() => {
-    // Simulate API call with setTimeout
-    const loadStats = () => {
-      setStats({
-        totalUsers: 1247,
-        activeUsers: 892,
+  // Fetching total users and other stats
+useEffect(() => {
+    axios.get('http://localhost:8081/admin/total-users')
+      .then(res => {
+        setStats(prev => ({
+          ...prev,
+          totalUsers: res.data.total
+        }));
+      })
+      .catch(() => {
+        // fallback or error handling
+        setStats(prev => ({
+          ...prev,
+          totalUsers: 0
+        }));
+      });
+// End of fetching total users
+// Fetching active users and other stats
+  axios.get('http://localhost:8081/admin/active-users')
+    .then(res => {
+      setStats(prev => ({
+        ...prev,
+        activeUsers: res.data.active
+      }));
+    })
+    .catch(() => {
+      setStats(prev => ({
+        ...prev,
+        activeUsers: 0
+      }));
+    });
+
+setTimeout(() => {
+      setStats(prev => ({
+        ...prev,
         usersUndergoingTreatment: 156,
         usersLeaving: 23,
         receivedAppointments: 67
-      });
-    };
-
-    setTimeout(loadStats, 500);
+      }));
+    }, 500);
   }, []);
 
   const statCards = [
