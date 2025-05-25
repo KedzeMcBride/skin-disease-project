@@ -82,22 +82,22 @@ axios.get('http://localhost:8081/admin/users-leaving')
     }));
   });
 
-  // Fetch all appointment IDs
-    axios.get('http://localhost:8081/admin/appointment-ids')
-      .then(res => {
-        setAppointmentIds(res.data.ids);
-        setStats(prev => ({
-          ...prev,
-          receivedAppointments: res.data.ids.length // update receivedAppointments count
-        }));
-      })
-      .catch(() => {
-        setAppointmentIds([]);
-        setStats(prev => ({
-          ...prev,
-          receivedAppointments: 0
-        }));
-      });
+  // Fetch all appointment IDs & user names
+      axios.get('http://localhost:8081/admin/appointment-ids')
+    .then(res => {
+      setAppointmentIds(res.data.ids); // Now each item is { id, user_name }
+      setStats(prev => ({
+        ...prev,
+        receivedAppointments: res.data.ids.length
+      }));
+    })
+    .catch(() => {
+      setAppointmentIds([]);
+      setStats(prev => ({
+        ...prev,
+        receivedAppointments: 0
+      }));
+    });
 
 setTimeout(() => {
       setStats(prev => ({
@@ -305,9 +305,11 @@ setTimeout(() => {
             </div>
             {/* ADD THIS: Show appointment IDs for Received Appointments */}
             {card.title === 'Received Appointments' && appointmentIds.length > 0 && (
-                <ul style={{ marginTop: '12px', fontSize: '14px', color: '#6b7280', maxHeight: 100, overflowY: 'auto' }}>
-                {appointmentIds.map(id => (
-                    <li key={id}>Appointment ID: {id}</li>
+             <ul style={{ marginTop: '12px', fontSize: '14px', color: '#6b7280', maxHeight: 100, overflowY: 'auto' }}>
+                {appointmentIds.map(item => (
+                <li key={item.id}>
+                    Appointment ID: {item.id} — User: {item.user_name}
+                </li>
                 ))}
                 </ul>
             )}

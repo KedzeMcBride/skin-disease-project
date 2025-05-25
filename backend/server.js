@@ -282,14 +282,14 @@ app.get('/admin/users-undergoing-treatment', (req, res) => {
 
 // Get all appointment IDs
 app.get('/admin/appointment-ids', (req, res) => {
-    const sql = "SELECT id FROM appointments";
+    const sql = "SELECT id, user_name FROM appointments";
     db.query(sql, (err, results) => {
         if (err) {
             console.error(err);
             return res.status(500).json({ message: "Failed to fetch appointment IDs" });
         }
-        // Return an array of IDs
-        return res.status(200).json({ ids: results.map(row => row.id) });
+        // Return an array of objects with id and user_name
+        return res.status(200).json({ ids: results });
     });
 });
 
