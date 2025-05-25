@@ -1,6 +1,6 @@
 
 import { Clock, User, Stethoscope, Calendar } from 'lucide-react';
-
+import axios from 'axios';
 const DashboardPersonnels = () => {
   // Sample data for four medical personnel
   const medicalPersonnel = [
@@ -210,6 +210,23 @@ const DashboardPersonnels = () => {
     }
   };
 
+  // frontend to submit a booking request
+const handleBookAppointment = (doctor) => {
+  const userId = parseInt(localStorage.getItem('userId'), 10);
+  const userName = localStorage.getItem('userName');
+  const appointmentDate = new Date().toISOString();
+
+  axios.post('http://localhost:8081/appointments', {
+    user_id: userId,
+    user_name: userName,
+    doctor_id: doctor.id,
+    appointment_date: appointmentDate
+  })
+  .then(() => alert('Appointment booked!'))
+  .catch(() => alert('Failed to book appointment'));
+};
+
+
   return (
     <div id="DashboardText-container">
     <div className="text-title"><h1>Personnels Info</h1></div>
@@ -278,9 +295,9 @@ const DashboardPersonnels = () => {
                     : styles.buttonUnavailable)
                 }}
                 disabled={person.availability !== "Available"}
+                onClick={() => person.availability === "Available" && handleBookAppointment(person)}
                 onMouseEnter={(e) => handleButtonHover(e, person.availability === "Available")}
-                onMouseLeave={(e) => handleButtonLeave(e, person.availability === "Available")}
-              >
+                onMouseLeave={(e) => handleButtonLeave(e, person.availability === "Available")}>
                 {person.availability === "Available" ? "Book Appointment" : "Currently Unavailable"}
               </button>
             </div>

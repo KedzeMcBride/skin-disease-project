@@ -58,7 +58,7 @@ app.post('/login', (req, res) => {
 
                 if (isMatch) {
                     console.log("Login successful for user:", email);
-                    return res.status(200).json({message:"LOGGED IN SUCCESSFULLY", name: data[0].name, email: data[0].email });
+                    return res.status(200).json({message:"LOGGED IN SUCCESSFULLY", id: data[0].id, name: data[0].name, email: data[0].email });
                 } else {
                     console.log("Invalid credentials for user:", email);
                     return res.status(401).json("INVALID CREDENTIALS");
@@ -159,6 +159,23 @@ app.delete('/db_user/:email/conditions/:id', (req, res) => {
 });
 //End of delete user conditions
 
+
+// START USER DOCTOR APPOINTMENT
+app.post('/appointments', (req, res) => {
+    const { user_id, user_name, doctor_id, appointment_date } = req.body;
+    const sql = `
+        INSERT INTO appointments (user_id, user_name, doctor_id, appointment_date)
+        VALUES (?, ?, ?, ?)
+    `;
+    db.query(sql, [user_id, user_name, doctor_id, appointment_date], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Failed to book appointment" });
+        }
+        return res.status(200).json({ message: "Appointment booked", id: result.insertId });
+    });
+});
+// ENDPOINT TO BOOK AN APPOINTMENT
 
 // LOGIN SPECIALLY FOR ADMIN
 app.post('/admin/login', (req, res) => {

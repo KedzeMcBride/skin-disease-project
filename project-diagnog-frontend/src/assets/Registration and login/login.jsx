@@ -31,6 +31,7 @@ const handleSubmit = (event) => {
           Navigate('/admindashboard'); // Make sure this route exists
           alert('Welcome Admin');
         } else if (!isAdmin && res.data.message === "LOGGED IN SUCCESSFULLY") {
+          localStorage.setItem('userId', res.data.id);
           localStorage.setItem('userName', res.data.name);
           localStorage.setItem('userEmail', res.data.email);
           Navigate('/landing');
