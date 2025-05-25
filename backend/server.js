@@ -293,6 +293,50 @@ app.get('/admin/appointment-ids', (req, res) => {
     });
 });
 
+// fetch for doctors
+// Get total number of doctors
+app.get('/admin/total-doctors', (req, res) => {
+    const sql = "SELECT COUNT(*) AS total FROM doctor";
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Failed to fetch doctor count" });
+        }
+        return res.status(200).json({ total: results[0].total });
+    });
+});
+
+// Get all active doctors (active_status = 'Available')
+app.get('/admin/active-doctors', (req, res) => {
+    const sql = "SELECT * FROM doctor WHERE active_status = 'Available'";
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Failed to fetch active doctors" });
+        }
+        return res.status(200).json({ doctors: results });
+    });
+});
+// Get all appointments
+
+app.get('/admin/appointments', (req, res) => {
+    const sql = `
+        SELECT 
+            a.id, 
+            a.appointment_date, 
+            a.user_name, 
+            d.Doctor_name 
+        FROM appointments a
+        LEFT JOIN doctor d ON a.doctor_id = d.id
+    `;
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Failed to fetch appointments" });
+        }
+        return res.status(200).json({ appointments: results });
+    });
+});
 
 const server = http.createServer(app);
 
