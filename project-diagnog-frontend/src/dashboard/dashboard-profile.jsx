@@ -165,6 +165,7 @@ const handleAddCondition = () => {
   if (newCondition.condition && newCondition.diagnosedDate) {
     axios.post(`http://localhost:8081/db_user/${userInfo.email}/conditions`, newCondition)
       .then(res => {
+        alert('Condition updated!');
         setSkinConditions(prev => [
           ...prev,
           { ...newCondition, id: res.data.id }
