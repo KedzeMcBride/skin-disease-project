@@ -254,6 +254,18 @@ app.get('/admin/active-users', (req, res) => {
   });
 });
 // endpoint to get total number of active users
+// Get total number of users leaving (not active)
+app.get('/admin/users-leaving', (req, res) => {
+    const sql = "SELECT COUNT(*) AS leaving FROM db_user WHERE is_active = 0";
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Failed to fetch users leaving count" });
+        }
+        return res.status(200).json({ leaving: results[0].leaving });
+    });
+});
+// Endpoint to get total number of users leaving (not active)
 
 // Get total number of users undergoing treatment (unique emails in user_conditions)
 app.get('/admin/users-undergoing-treatment', (req, res) => {

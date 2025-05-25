@@ -66,10 +66,24 @@ axios.get('http://localhost:8081/admin/users-undergoing-treatment')
       }));
     });
 
+    // Fetch users leaving (not active)
+axios.get('http://localhost:8081/admin/users-leaving')
+  .then(res => {
+    setStats(prev => ({
+      ...prev,
+      usersLeaving: res.data.leaving
+    }));
+  })
+  .catch(() => {
+    setStats(prev => ({
+      ...prev,
+      usersLeaving: 0
+    }));
+  });
+
 setTimeout(() => {
       setStats(prev => ({
         ...prev,
-        usersLeaving: 23,
         receivedAppointments: 67
       }));
     }, 500);
