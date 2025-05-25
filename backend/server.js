@@ -278,6 +278,21 @@ app.get('/admin/users-undergoing-treatment', (req, res) => {
         return res.status(200).json({ total: results[0].total });
     });
 });
+// endpoint to get total number of users undergoing treatment
+
+// Get all appointment IDs
+app.get('/admin/appointment-ids', (req, res) => {
+    const sql = "SELECT id FROM appointments";
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Failed to fetch appointment IDs" });
+        }
+        // Return an array of IDs
+        return res.status(200).json({ ids: results.map(row => row.id) });
+    });
+});
+
 
 const server = http.createServer(app);
 

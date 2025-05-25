@@ -17,6 +17,7 @@ const AdminUsers = () => {
     usersLeaving: 0,
     receivedAppointments: 0
   });
+  const [appointmentIds, setAppointmentIds] = useState([]);
 
   // Fetching total users and other stats
 useEffect(() => {
@@ -81,10 +82,26 @@ axios.get('http://localhost:8081/admin/users-leaving')
     }));
   });
 
+  // Fetch all appointment IDs
+    axios.get('http://localhost:8081/admin/appointment-ids')
+      .then(res => {
+        setAppointmentIds(res.data.ids);
+        setStats(prev => ({
+          ...prev,
+          receivedAppointments: res.data.ids.length // update receivedAppointments count
+        }));
+      })
+      .catch(() => {
+        setAppointmentIds([]);
+        setStats(prev => ({
+          ...prev,
+          receivedAppointments: 0
+        }));
+      });
+
 setTimeout(() => {
       setStats(prev => ({
         ...prev,
-        receivedAppointments: 67
       }));
     }, 500);
   }, []);
@@ -251,46 +268,54 @@ setTimeout(() => {
         <p style={styles.subtitle}>Track and monitor user statistics and activities</p>
       </div>
 
-      <div style={styles.statsGrid}>
-        {statCards.map((card, index) => {
-          const Icon = card.icon;
-          return (
-            <div
-              key={index}
-              style={styles.statCard}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = styles.statCardHover.transform;
-                e.currentTarget.style.boxShadow = styles.statCardHover.boxShadow;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0px)';
-                e.currentTarget.style.boxShadow = styles.statCard.boxShadow;
-              }}
+    <div style={styles.statsGrid}>
+    {statCards.map((card, index) => {
+        const Icon = card.icon;
+        return (
+        <div
+            key={index}
+            style={styles.statCard}
+            onMouseEnter={(e) => {
+            e.currentTarget.style.transform = styles.statCardHover.transform;
+            e.currentTarget.style.boxShadow = styles.statCardHover.boxShadow;
+            }}
+            onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0px)';
+            e.currentTarget.style.boxShadow = styles.statCard.boxShadow;
+            }}
+        >
+            <div style={styles.cardHeader}>
+            <h3 style={styles.cardTitle}>{card.title}</h3>
+            <div 
+                style={{
+                ...styles.iconContainer,
+                backgroundColor: card.bgColor
+                }}
             >
-              <div style={styles.cardHeader}>
-                <h3 style={styles.cardTitle}>{card.title}</h3>
-                <div 
-                  style={{
-                    ...styles.iconContainer,
-                    backgroundColor: card.bgColor
-                  }}
-                >
-                  <Icon size={24} color={card.color} />
-                </div>
-              </div>
-              <div>
-                <p style={styles.cardValue}>
-                  {card.value.toLocaleString()}
-                </p>
-                <div style={styles.cardChange}>
-                  <Activity size={16} />
-                  <span>+12% from last month</span>
-                </div>
-              </div>
+                <Icon size={24} color={card.color} />
             </div>
-          );
-        })}
-      </div>
+            </div>
+            <div>
+            <p style={styles.cardValue}>
+                {card.value.toLocaleString()}
+            </p>
+            <div style={styles.cardChange}>
+                <Activity size={16} />
+                <span>+12% from last month</span>
+            </div>
+            {/* ADD THIS: Show appointment IDs for Received Appointments */}
+            {card.title === 'Received Appointments' && appointmentIds.length > 0 && (
+                <ul style={{ marginTop: '12px', fontSize: '14px', color: '#6b7280', maxHeight: 100, overflowY: 'auto' }}>
+                {appointmentIds.map(id => (
+                    <li key={id}>Appointment ID: {id}</li>
+                ))}
+                </ul>
+            )}
+            </div>
+        </div>
+        );
+    })}
+    </div>
 
       <div style={styles.summarySection}>
         <h2 style={styles.summaryTitle}>Quick Summary</h2>
