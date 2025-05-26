@@ -8,12 +8,17 @@ import DashboardNav from './dashboard-nav';
 const DashboardReports = () => {
 const userEmail = sessionStorage.getItem('userEmail');
 
-
+// State to hold patient information
   const [patientInfo, setPatientInfo] = useState({
     fullName: '',
     age: '',
     contact: '',
     dateOfReport: ''
+  });
+  //hold medical history
+  const [medicalHistory, setMedicalHistory] = useState({
+    pastDetections: [],
+    previousTreatments: []
   });
 
 useEffect(() => {
@@ -29,7 +34,24 @@ console.log("userEmail:", userEmail);
       contact: 'N/A',
       dateOfReport: 'N/A'
     }));
+    if (userEmail) {
+      axios.get(`http://localhost:8081/user/medical-history/${userEmail}`)
+        .then(res => {
+          const detections = res.data.map(item => item.conditions).filter(Boolean);
+          const treatments = res.data.map(item => item.treatment).filter(Boolean);
+          setMedicalHistory({
+            pastDetections: detections,
+            previousTreatments: treatments
+          });
+        })
+        .catch(() => setMedicalHistory({
+          pastDetections: [],
+          previousTreatments: []
+        }));
+    }
 }, [userEmail]);
+
+
 
     // Sample patient data
   const [patientData] = useState({
@@ -557,22 +579,38 @@ console.log("userEmail:", userEmail);
           </section>
 
           {/* Medical History */}
-          <section style={styles.historySection}>
-            <div style={styles.sectionHeader}>
-              <Clock size={24} style={styles.icon} />
-              <h2 style={styles.sectionTitle}>Medical History</h2>
+        <section style={styles.historySection}>
+        <div style={styles.sectionHeader}>
+            <Clock size={24} style={styles.icon} />
+            <h2 style={styles.sectionTitle}>Medical History</h2>
+        </div>
+        <div style={{...styles.grid, ...styles.gridCols2}}>
+            <div style={styles.fieldGroup}>
+            <h3 style={styles.detailTitle}>Past Detections</h3>
+            <ul style={styles.detailText}>
+                {medicalHistory.pastDetections.length > 0 ? (
+                medicalHistory.pastDetections.map((cond, idx) => (
+                    <li key={idx}>{cond}</li>
+                ))
+                ) : (
+                <li>No past detections</li>
+                )}
+            </ul>
             </div>
-            <div style={{...styles.grid, ...styles.gridCols2}}>
-              <div style={styles.fieldGroup}>
-                <h3 style={styles.detailTitle}>Past Detections</h3>
-                <p style={styles.detailText}>{patientData.medicalHistory.pastDetections}</p>
-              </div>
-              <div style={styles.fieldGroup}>
-                <h3 style={styles.detailTitle}>Previous Treatments</h3>
-                <p style={styles.detailText}>{patientData.medicalHistory.previousTreatments}</p>
-              </div>
+            <div style={styles.fieldGroup}>
+            <h3 style={styles.detailTitle}>Previous Treatments</h3>
+            <ul style={styles.detailText}>
+                {medicalHistory.previousTreatments.length > 0 ? (
+                medicalHistory.previousTreatments.map((treat, idx) => (
+                    <li key={idx}>{treat}</li>
+                ))
+                ) : (
+                <li>No previous treatments</li>
+                )}
+            </ul>
             </div>
-          </section>
+        </div>
+        </section>
 
           {/* Disclaimer */}
           <section style={styles.disclaimerSection}>

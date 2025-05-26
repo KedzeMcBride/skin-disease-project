@@ -194,7 +194,23 @@ app.get('/user/report/:email', (req, res) => {
         });
     });
 });
-
+// Get user medical history (all conditions and treatments)
+app.get('/user/medical-history/:email', (req, res) => {
+    const { email } = req.params;
+    const sql = `
+        SELECT conditions, treatment
+        FROM user_conditions
+        WHERE email = ?
+        ORDER BY diagnosedDate DESC
+    `;
+    db.query(sql, [email], (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Failed to fetch medical history" });
+        }
+        return res.status(200).json(results);
+    });
+});
 
 // START USER DOCTOR APPOINTMENT
 app.post('/appointments', (req, res) => {
@@ -212,6 +228,7 @@ app.post('/appointments', (req, res) => {
     });
 });
 // ENDPOINT TO BOOK AN APPOINTMENT
+
 
 // LOGIN SPECIALLY FOR ADMIN
 app.post('/admin/login', (req, res) => {
