@@ -17,7 +17,7 @@ const AdminSidebar = () => {
     { id: 'patients', label: 'Patients', icon: Users, route: '/admindashboard' },
     { id: 'doctors', label: 'Doctors', icon: UserCheck, route: '/admindoctor' },
     { id: 'sent-bookings', label: 'Sent Bookings', icon: Calendar },
-    { id: 'assigned-bookings', label: 'Bookings Assigned', icon: CalendarCheck },
+    { id: 'bookings-details', label: 'Bookings Details', icon: CalendarCheck },
   ];
 
   const handleLogout = () => {
