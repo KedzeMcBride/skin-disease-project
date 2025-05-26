@@ -1,6 +1,7 @@
 
 import {BsFillBellFill} from 'react-icons/bs';
 const AdminHeader = () => {
+  const hasNotification = true;
   const styles = {
     header: {
       backgroundColor: 'white',
@@ -61,7 +62,10 @@ const AdminHeader = () => {
           <div style={styles.avatar}>
             KM
           </div>
-           <BsFillBellFill className='icon' />
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <BsFillBellFill className='icon'/>
+            {hasNotification && <span className="notification-dot"></span>}
+          </div>
         </div>
         </div>
     </header>
