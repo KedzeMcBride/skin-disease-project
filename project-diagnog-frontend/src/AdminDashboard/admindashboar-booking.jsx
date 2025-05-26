@@ -18,6 +18,7 @@ const AdminDashboardBooking = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [appointmentsPerPage] = useState(10);
+  const [doctors, setDoctors] = useState([]);
   
   // Filter states
   const [filters, setFilters] = useState({
@@ -55,6 +56,15 @@ const AdminDashboardBooking = () => {
 
     fetchAppointments();
     }, []);
+
+    // display the fetched doctors
+useEffect(() => {
+  fetch('http://localhost:8081/doctors')
+    .then(res => res.json())
+    .then(data => setDoctors(data))
+    .catch(err => console.error("Failed to load doctors:", err));
+}, []);
+
   // Filter and sort appointments
   useEffect(() => {
     let filtered = [...appointments];
@@ -532,15 +542,14 @@ const handleStatusChange = async (appointmentId, newStatus) => {
           <div style={styles.filterGroup}>
             <label style={styles.filterLabel}>Doctor</label>
             <select
-              style={styles.select}
-              value={filters.doctor}
-              onChange={(e) => setFilters({ ...filters, doctor: e.target.value })}
+            style={styles.select}
+            value={filters.doctor}
+            onChange={(e) => setFilters({ ...filters, doctor: e.target.value })}
             >
-              <option value="all">All Doctors</option>
-              <option value="Dr. Lee">Dr. Lee</option>
-              <option value="Dr. Mike">Dr. Mike</option>
-              <option value="Dr. Sarah">Dr. Sarah</option>
-              <option value="Dr. Brown">Dr. Brown</option>
+            <option value="all">All Doctors</option>
+            {doctors.map((doctor, index) => (
+                <option key={index} value={doctor}>{doctor}</option>
+            ))}
             </select>
           </div>
 

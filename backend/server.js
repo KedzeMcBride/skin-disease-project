@@ -453,6 +453,14 @@ app.put('/appointments/:id/status', (req, res) => {
   });
 });
 
+// fetch doctors for the dashboard
+app.get('/doctors', (req, res) => {
+  db.query("SELECT Doctor_name FROM doctor", (err, results) => {
+    if (err) return res.status(500).json({ error: "Failed to fetch doctors" });
+    res.json(results.map(doc => doc.Doctor_name));
+  });
+});
+
 
 const server = http.createServer(app);
 
