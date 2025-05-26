@@ -16,6 +16,8 @@ import AdminDashboard from './AdminDashboard/admindashboard';
 import AdminDoctor from './AdminDashboard/admindoctor';
 import ReportUser from './dashboard/report';
 import DashboardReports from './dashboard/dashboard-reports';
+import Adminbooking from './AdminDashboard/adminbooking';
+
 
 
 function App() {
@@ -46,6 +48,7 @@ function App() {
           <Route path="/setting" element={<Setting />} />
           <Route path="/admindashboard" element={<AdminDashboard />} />
           <Route path="/admindoctor" element={<AdminDoctor />} />
+          <Route path="/adminbooking" element={<Adminbooking />} />
           <Route path="/reports" element={<DashboardReports userEmail={userEmail} />} />       
           </Routes>
       )}

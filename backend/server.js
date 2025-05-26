@@ -413,6 +413,46 @@ app.get('/admin/appointments', (req, res) => {
         return res.status(200).json({ appointments: results });
     });
 });
+// End of fetching appointments for the doctor dashboard appointments section
+app.get('/api/appointments', (req, res) => {
+  const query = `
+    SELECT 
+      a.id,
+      a.user_name AS patientName,
+      DATE(a.appointment_date) AS date,
+      TIME(a.appointment_date) AS time,
+      d.doctor_name AS doctor,
+      a.status
+    FROM 
+      appointments AS a
+    JOIN 
+      doctor AS d ON a.doctor_id = d.id
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching appointments:', err);
+      return res.status(500).json({ message: 'Failed to fetch appointment details' });
+    }
+    return res.status(200).json(results);
+  });
+});
+
+// Update Appointment Status in the DB
+app.put('/appointments/:id/status', (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const sql = "UPDATE appointments SET status = ? WHERE id = ?";
+  db.query(sql, [status, id], (err) => {
+    if (err) {
+      console.error("DB update error:", err);
+      return res.status(500).json({ error: "Failed to update status" });
+    }
+    return res.json({ success: true });
+  });
+});
+
 
 const server = http.createServer(app);
 
