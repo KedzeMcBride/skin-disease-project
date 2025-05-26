@@ -34,6 +34,7 @@ const handleSubmit = (event) => {
           localStorage.setItem('userId', res.data.id);
           localStorage.setItem('userName', res.data.name);
           localStorage.setItem('userEmail', res.data.email);
+          sessionStorage.setItem('userEmail', res.data.email);
           Navigate('/landing');
           alert('Welcome back');
         } else {

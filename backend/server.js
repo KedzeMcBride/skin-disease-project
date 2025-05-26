@@ -160,6 +160,41 @@ app.delete('/db_user/:email/conditions/:id', (req, res) => {
 });
 //End of delete user conditions
 
+// Get user report info by email
+app.get('/user/report/:email', (req, res) => {
+    const { email } = req.params;
+    console.log("Fetching report for:", email);
+    const sql = `
+        SELECT 
+            u.name AS fullName,
+            u.phone AS contact,
+            u.dateOfBirth,
+            c.diagnosedDate
+        FROM db_user u
+        LEFT JOIN user_conditions c ON u.email = c.email
+        WHERE u.email = ?
+        ORDER BY c.diagnosedDate DESC
+        LIMIT 1
+    `;
+    db.query(sql, [email], (err, results) => {
+        if (err) return res.status(500).json({ message: "Failed to fetch user report info" });
+        if (results.length === 0) return res.status(404).json({ message: "No report found for this user" });
+        const user = results[0];
+        let age = null;
+        if (user.dateOfBirth) {
+            const dob = new Date(user.dateOfBirth);
+            const diff = Date.now() - dob.getTime();
+            age = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+        }
+        res.status(200).json({
+            fullName: user.fullName,
+            contact: user.contact,
+            age,
+            dateOfReport: user.diagnosedDate
+        });
+    });
+});
+
 
 // START USER DOCTOR APPOINTMENT
 app.post('/appointments', (req, res) => {

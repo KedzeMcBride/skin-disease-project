@@ -14,11 +14,13 @@ import Personnels from './dashboard/personnels';
 import Setting from './dashboard/setting';
 import AdminDashboard from './AdminDashboard/admindashboard';
 import AdminDoctor from './AdminDashboard/admindoctor';
-
+import ReportUser from './dashboard/report';
+import DashboardReports from './dashboard/dashboard-reports';
 
 
 function App() {
   const [loading, setLoading] = useState(true);
+  const userEmail = localStorage.getItem('userEmail');
 
   useEffect(() => {
     const timeout = setTimeout(() => setLoading(false), 3000);
@@ -39,11 +41,13 @@ function App() {
           <Route path="/chat" element={<Chat />} />
           <Route path="/text" element={<Text />} />
           <Route path="/diagnose" element={<Diagnose />} />
+          <Route path="/report" element={<ReportUser />} />
           <Route path="/personnels" element={<Personnels />} />
           <Route path="/setting" element={<Setting />} />
           <Route path="/admindashboard" element={<AdminDashboard />} />
           <Route path="/admindoctor" element={<AdminDoctor />} />
-        </Routes>
+          <Route path="/reports" element={<DashboardReports userEmail={userEmail} />} />       
+          </Routes>
       )}
     </Router>
   );
