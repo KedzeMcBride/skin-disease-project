@@ -438,6 +438,7 @@ app.get('/api/appointments', (req, res) => {
   });
 });
 
+
 // Update Appointment Status in the DB
 app.put('/appointments/:id/status', (req, res) => {
   const { id } = req.params;
