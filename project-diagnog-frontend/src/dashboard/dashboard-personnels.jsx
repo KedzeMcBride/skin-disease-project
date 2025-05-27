@@ -222,7 +222,7 @@ const handleBookAppointment = (doctor) => {
     doctor_id: doctor.id,
     appointment_date: appointmentDate
   })
-  .then(() => alert('Appointment booked!'))
+  .then(() => alert('Appointment Requested!'))
   .catch(() => alert('Failed to book appointment'));
 };
 

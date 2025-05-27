@@ -428,7 +428,7 @@ app.get('/api/appointments', (req, res) => {
     JOIN 
       doctor AS d ON a.doctor_id = d.id
   `;
-
+  
   db.query(query, (err, results) => {
     if (err) {
       console.error('Error fetching appointments:', err);
