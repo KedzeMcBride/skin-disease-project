@@ -25,7 +25,7 @@ useEffect(() => {
 console.log("userEmail:", userEmail);
   axios.get(`http://localhost:8081/user/report/${userEmail}`)
     .then(res => {
-      console.log("API response:", res.data); // <--- Add this
+      console.log("API response:", res.data);
       setPatientInfo(res.data);
     })
     .catch(() => setPatientInfo({
@@ -53,7 +53,7 @@ console.log("userEmail:", userEmail);
 
 
 
-    // Sample patient data
+
   const [patientData] = useState({
     patientInformation: {
       fullName: "Sarah Johnson",
@@ -72,7 +72,7 @@ console.log("userEmail:", userEmail);
       bodyPartCaptured: "Left Forearm"
     },
     diagnosisResult: {
-      skinDiseaseName: "Psoriasis",
+      skinDiseaseName: "Eczema",
       confidenceScore: "94%",
       infoLink: "https://medinfo.com/psoriasis"
     },
@@ -627,7 +627,7 @@ console.log("userEmail:", userEmail);
         {/* Footer */}
         <div style={styles.footer}>
           <p style={styles.footerText}>
-            Generated on {formatDate(new Date().toISOString())} | 
+            Created on {formatDate(new Date().toISOString())} | 
             For medical emergencies, please contact your local emergency services
           </p>
         </div>
