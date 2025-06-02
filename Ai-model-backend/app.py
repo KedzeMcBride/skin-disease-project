@@ -9,11 +9,10 @@ import logging
 app = Flask(__name__)
 CORS(app) 
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Load model
+
 try:
     model = tf.keras.models.load_model("skin_disease_model.h5")
     logger.info("Model loaded successfully")

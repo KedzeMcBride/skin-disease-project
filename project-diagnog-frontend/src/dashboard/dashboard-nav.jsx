@@ -30,7 +30,7 @@ const DashboardNav = () => {
                 </li>
                 <li className="sidebar-list-item">
                 <FaCheckCircle className='icon'/>
-                <a href="">Results</a>
+                <Link to="/result">Results</Link>
                 </li>
                 <li className="sidebar-list-item">
                 <BsPeopleFill className='icon'/>
