@@ -11,7 +11,8 @@ CORS(app)
 
 
 model = tf.keras.models.load_model("skin_disease_model.h5")
-CLASS_NAMES = ["rash", "ringworm", "eczema"]
+#CLASS_NAMES = ["rash", "ringworm", "eczema"]
+CLASS_NAMES = ["eczema", "rash", "ringworm"]
 
 
 def preprocess_image(image_bytes):
