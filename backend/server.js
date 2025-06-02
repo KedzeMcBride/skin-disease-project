@@ -233,7 +233,7 @@ app.post('/appointments', (req, res) => {
 // LOGIN SPECIALLY FOR ADMIN
 app.post('/admin/login', (req, res) => {
     const { email, password } = req.body;
-    console.log("Admin login request received:", req.body); // Log the request body 
+    console.log("Admin login request received:", req.body); 
 
     const sql = "SELECT * FROM db_administrator WHERE admin_email = ?";
     db.query(sql, [email], (err, data) => {
@@ -242,7 +242,7 @@ app.post('/admin/login', (req, res) => {
             return res.status(500).json({ message: "Server error" });
         }
         if (data.length > 0) {
-            console.log("Admin found:", data[0].admin_email); // Log the found admin email
+            console.log("Admin found:", data[0].admin_email); 
             console.log("Plain text password:", password);
             // Compare plain text password
             if (password === data[0].admin_password) {
