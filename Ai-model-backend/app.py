@@ -63,11 +63,21 @@ def predict():
         class_idx = int(np.argmax(prediction))
         confidence = float(np.max(prediction))
 
+        # 👀 New class to be added for the model to identify unknown images and also uninfected images
+        threshold = 0.6
+        if confidence < threshold:
+            logger.warning(f"Low confidence prediction: {confidence}")
+            return jsonify({
+                "prediction": "unknown",
+                "confidence": round(confidence * 100, 2),
+                "message": "Prediction confidence is too low. The image might be invalid or not a skin condition."
+            })
+
         result = {
             "prediction": CLASS_NAMES[class_idx],
             "confidence": round(confidence * 100, 2)
         }
-        
+
         logger.info(f"Prediction successful: {result}")
         return jsonify(result)
 

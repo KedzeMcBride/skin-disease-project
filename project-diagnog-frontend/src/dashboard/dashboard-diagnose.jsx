@@ -123,7 +123,7 @@ const DashboardDiagnose = () => {
                             Error: {error}
                         </div>
                     )}
-                    
+
                     {prediction && (
                         <div className="prediction-result" style={{marginTop: '20px', paddingLeft:'50px'}}>
                             <h3>Prediction: {prediction.prediction}</h3>
