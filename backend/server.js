@@ -37,6 +37,7 @@ app.post('/register', async (req, res) => {
         return res.status(500).json({ message: "Error encrypting password" });
     }
 });
+
 // Login endpoint with password comparison
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
@@ -228,7 +229,22 @@ app.post('/appointments', (req, res) => {
     });
 });
 // ENDPOINT TO BOOK AN APPOINTMENT
-
+// POST TO ADD PREDICTED DETAILS
+app.post('/store-prediction', (req, res) => {
+    const { userId, userEmail, prediction, confidence } = req.body;
+    
+    const sql = `
+        INSERT INTO user_predictions (user_id, user_email, prediction, confidence, prediction_date)
+        VALUES (?, ?, ?, ?, NOW())
+    `;
+    db.query(sql, [userId, userEmail, prediction, confidence], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Failed to store prediction" });
+        }
+        return res.status(200).json({ message: "Prediction stored successfully" });
+    });
+});
 
 // LOGIN SPECIALLY FOR ADMIN
 app.post('/admin/login', (req, res) => {

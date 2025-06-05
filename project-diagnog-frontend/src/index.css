@@ -1705,6 +1705,78 @@ cursor: pointer;
   height: 200px;
   width: 200px;
 }
+.diagnose-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.tab-button {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    color: #666;
+}
+
+.tab-button.active {
+    color: #2a52be;
+    border-bottom: 2px solid #2a52be;
+}
+
+.image-preview-container {
+    height: 250px;
+    border: 2px dashed #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    cursor: pointer;
+    position: relative;
+}
+
+.upload-prompt {
+    text-align: center;
+}
+
+.file-types {
+    font-size: 0.8em;
+    color: #666;
+}
+
+.prediction-history {
+    margin-top: 20px;
+}
+
+.history-item {
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.confidence-badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+}
+
+.confidence-badge.high {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.confidence-badge.medium {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.confidence-badge.low {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+/* Add more styles as needed */
 /* CSS image upload end*/
 /* CSS for admin */
 /* Admin Sidebar Styles */
