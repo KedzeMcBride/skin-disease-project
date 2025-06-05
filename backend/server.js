@@ -1,491 +1,674 @@
-const express = require('express');
-const mysql = require('mysql');
-const cors = require('cors');
-const http = require('http');
-const bcrypt = require('bcryptjs');
+import { useState, useEffect } from 'react';
+import { User, Upload, Image, AlertCircle, Stethoscope, BookOpen, Shield, Clock } from 'lucide-react';
+import axios from 'axios';
+import PropTypes from 'prop-types';
+import DashboardHeader from './dashboard-header';
+import DashboardNav from './dashboard-nav';
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const DashboardReports = () => {
+  const userEmail = sessionStorage.getItem('userEmail');
 
-const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "skin_diagnostic_system",
-});
+  // State to hold patient information
+  const [patientInfo, setPatientInfo] = useState({
+    fullName: '',
+    age: '',
+    contact: '',
+    dateOfReport: ''
+  });
+  //hold medical history
+  const [medicalHistory, setMedicalHistory] = useState({
+    pastDetections: [],
+    previousTreatments: []
+  });
 
-//Registration area begin
-app.post('/register', async (req, res) => {
-    const { name, email, password } = req.body;
+  const [diagnosisResult, setDiagnosisResult] = useState({
+    prediction: 'N/A',
+    confidence: 'N/A'
+  });
 
-    //password hashing
-    try {
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
+  useEffect(() => {
+    console.log("userEmail:", userEmail);
+    axios.get(`http://localhost:8081/user/report/${userEmail}`)
+      .then(res => {
+        console.log("API response:", res.data);
+        setPatientInfo(res.data);
+      })
+      .catch(() => setPatientInfo({
+        fullName: 'N/A',
+        age: 'N/A',
+        contact: 'N/A',
+        dateOfReport: 'N/A'
+      }));
 
-        const sql = "INSERT INTO db_user (name, email, password) VALUES (?, ?, ?)";
-        db.query(sql, [name, email, hashedPassword], (err, data) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ message: "Failed to Register User" });
-            }
-            return res.status(200).json({ message: "User Registered Successfully" });
+    if (userEmail) {
+      axios.get(`http://localhost:8081/user/medical-history/${userEmail}`)
+        .then(res => {
+          const detections = res.data.map(item => item.conditions).filter(Boolean);
+          const treatments = res.data.map(item => item.treatment).filter(Boolean);
+          setMedicalHistory({
+            pastDetections: detections,
+            previousTreatments: treatments
+          });
+        })
+        .catch(() => setMedicalHistory({
+          pastDetections: [],
+          previousTreatments: []
+        }));
+
+      axios.get(`http://localhost:8081/user/latest-prediction/${userEmail}`)
+        .then(res => {
+          console.log("API response (latest prediction):", res.data);
+          if (res.data) {
+            setDiagnosisResult({
+              prediction: res.data.prediction,
+              confidence: `${parseFloat(res.data.confidence).toFixed(2)}%` // Ensure two decimal places for confidence
+            });
+          } else {
+            setDiagnosisResult({
+              prediction: 'No recent prediction',
+              confidence: 'N/A'
+            });
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching latest prediction:", error);
+          setDiagnosisResult({
+            prediction: 'Failed to load prediction',
+            confidence: 'N/A'
+          });
         });
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({ message: "Error encrypting password" });
     }
-});
+  }, [userEmail]);
 
-// Login endpoint with password comparison
-app.post('/login', (req, res) => {
-    const { email, password } = req.body;
-    console.log("Login request received:", req.body); 
-
-    const sql = "SELECT * FROM db_user WHERE email = ?";
-    db.query(sql, [email], async (err, data) => {
-        if (err) {
-            console.error("Database error:", err);
-            return res.status(500).json("ERROR FAILED TO LOGIN");
-        }
-        if (data.length > 0) {
-            try {
-                console.log("Plain text password:", password);
-                console.log("Hashed password from database:", data[0].password);
-
-                const isMatch = await bcrypt.compare(password, data[0].password);
-                console.log("Password comparison result:", isMatch);
-
-                if (isMatch) {
-                    console.log("Login successful for user:", email);
-                    db.query("UPDATE db_user SET is_active = 1 WHERE id = ?", [data[0].id]);
-                    return res.status(200).json({message:"LOGGED IN SUCCESSFULLY", id: data[0].id, name: data[0].name, email: data[0].email });
-                } else {
-                    console.log("Invalid credentials for user:", email);
-                    return res.status(401).json("INVALID CREDENTIALS");
-                }
-            } catch (compareErr) {
-                console.error("Password comparison error:", compareErr);
-                return res.status(500).json("ERROR COMPARING PASSWORD");
-            }
-        } else {
-            console.log("User not found:", email);
-            return res.status(404).json("USER NOT FOUND");
-        }
-    });
-});
-
-// getting user details from db_user table
-// and sending it to the frontend
-app.get('/user/:email', (req, res) => {
-    const { email } = req.params;
-    const sql = "SELECT name, email, profile_picture, address, city, state, zipCode, country, phone, dateOfBirth FROM db_user WHERE email = ?";    db.query(sql, [email], (err, results) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Failed to fetch user" });
-        }
-        if (results.length === 0) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        return res.status(200).json(results[0]);
-    });
-});
-
-// Update user details in db_user table
-// and send the updated data back to the frontend
-app.put('/user/:email', (req, res) => {
-    const { email } = req.params;
-    const { name, profilePicture, address, city, state, zipCode, country, phone, dateOfBirth } = req.body;
-    const sql = `
-        UPDATE db_user 
-        SET name = ?, profile_picture = ?, address = ?, city = ?, state = ?, zipCode = ?, country = ?, phone = ?, dateOfBirth = ?
-        WHERE email = ?
-    `;
-    db.query(
-        sql,
-        [name, profilePicture, address, city, state, zipCode, country, phone, dateOfBirth, email], // <-- FIXED
-        (err, result) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ message: "Failed to update user" });
-            }
-            return res.status(200).json({ message: "User updated successfully" });
-        }
-    );
-});
-//POST FOR STORING USER CONDITIONS
-app.post('/db_user/:email/conditions', (req, res) => {
-    const { email } = req.params;
-    const { condition, diagnosedDate, severity, treatment, status } = req.body;
-    const sql = `
-        INSERT INTO user_conditions (email, conditions, diagnosedDate, severity, treatment, status)
-        VALUES (?, ?, ?, ?, ?, ?)
-    `;
-    db.query(sql, [email, condition, diagnosedDate, severity, treatment, status], (err, result) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Failed to add condition" });
-        }
-        return res.status(200).json({ message: "Condition added successfully", id: result.insertId });
-    });
-});
-// Endpoint to store user conditions
-
-// GET user conditions
-app.get('/db_user/:email/conditions', (req, res) => {
-    const { email } = req.params;
-    const sql = "SELECT * FROM user_conditions WHERE email = ?";
-    db.query(sql, [email], (err, results) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Failed to fetch conditions" });
-        }
-        return res.status(200).json(results);
-    });
-});
-// GET endpoint to retrieve user conditions
-
-
-//Delete user conditions
-app.delete('/db_user/:email/conditions/:id', (req, res) => {
-    const { id } = req.params;
-    const sql = "DELETE FROM user_conditions WHERE id = ?";
-    db.query(sql, [id], (err, result) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Failed to delete condition" });
-        }
-        return res.status(200).json({ message: "Condition deleted successfully" });
-    });
-});
-//End of delete user conditions
-
-// Get user report info by email
-app.get('/user/report/:email', (req, res) => {
-    const { email } = req.params;
-    console.log("Fetching report for:", email);
-    const sql = `
-        SELECT 
-            u.name AS fullName,
-            u.phone AS contact,
-            u.dateOfBirth,
-            c.diagnosedDate
-        FROM db_user u
-        LEFT JOIN user_conditions c ON u.email = c.email
-        WHERE u.email = ?
-        ORDER BY c.diagnosedDate DESC
-        LIMIT 1
-    `;
-    db.query(sql, [email], (err, results) => {
-        if (err) return res.status(500).json({ message: "Failed to fetch user report info" });
-        if (results.length === 0) return res.status(404).json({ message: "No report found for this user" });
-        const user = results[0];
-        let age = null;
-        if (user.dateOfBirth) {
-            const dob = new Date(user.dateOfBirth);
-            const diff = Date.now() - dob.getTime();
-            age = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
-        }
-        res.status(200).json({
-            fullName: user.fullName,
-            contact: user.contact,
-            age,
-            dateOfReport: user.diagnosedDate
-        });
-    });
-});
-// Get user medical history (all conditions and treatments)
-app.get('/user/medical-history/:email', (req, res) => {
-    const { email } = req.params;
-    const sql = `
-        SELECT conditions, treatment
-        FROM user_conditions
-        WHERE email = ?
-        ORDER BY diagnosedDate DESC
-    `;
-    db.query(sql, [email], (err, results) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Failed to fetch medical history" });
-        }
-        return res.status(200).json(results);
-    });
-});
-
-// START USER DOCTOR APPOINTMENT
-app.post('/appointments', (req, res) => {
-    const { user_id, user_name, doctor_id, appointment_date } = req.body;
-    const sql = `
-        INSERT INTO appointments (user_id, user_name, doctor_id, appointment_date)
-        VALUES (?, ?, ?, ?)
-    `;
-    db.query(sql, [user_id, user_name, doctor_id, appointment_date], (err, result) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Failed to book appointment" });
-        }
-        return res.status(200).json({ message: "Appointment booked", id: result.insertId });
-    });
-});
-// ENDPOINT TO BOOK AN APPOINTMENT
-// POST TO ADD PREDICTED DETAILS
-app.post('/store-prediction', (req, res) => {
-    const { userId, userEmail, prediction, confidence } = req.body;
-    
-    const sql = `
-        INSERT INTO user_predictions (user_id, user_email, prediction, confidence, prediction_date)
-        VALUES (?, ?, ?, ?, NOW())
-    `;
-    db.query(sql, [userId, userEmail, prediction, confidence], (err, result) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Failed to store prediction" });
-        }
-        return res.status(200).json({ message: "Prediction stored successfully" });
-    });
-});
-
-// LOGIN SPECIALLY FOR ADMIN
-app.post('/admin/login', (req, res) => {
-    const { email, password } = req.body;
-    console.log("Admin login request received:", req.body); 
-
-    const sql = "SELECT * FROM db_administrator WHERE admin_email = ?";
-    db.query(sql, [email], (err, data) => {
-        if (err) {
-            console.error("Admin login DB error:", err);
-            return res.status(500).json({ message: "Server error" });
-        }
-        if (data.length > 0) {
-            console.log("Admin found:", data[0].admin_email); 
-            console.log("Plain text password:", password);
-            // Compare plain text password
-            if (password === data[0].admin_password) {
-                return res.status(200).json({ message: "ADMIN LOGGED IN", email: data[0].admin_email });
-            } else {
-                return res.status(401).json({ message: "INVALID ADMIN CREDENTIALS" });
-            }
-        } else {
-            return res.status(404).json({ message: "ADMIN NOT FOUND" });
-        }
-    });
-});
-//END OF ADMIN LOGIN
-
-// Get total number of users and send to admin dashboard
-app.get('/admin/total-users', (req, res) => {
-    const sql = "SELECT COUNT(*) AS total FROM db_user";
-    db.query(sql, (err, results) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Failed to fetch user count" });
-        }
-        return res.status(200).json({ total: results[0].total });
-    });
-});
-//endpoint to get total number of users
-
-
-// Get total number of active users and send to admin dashboard
-app.get('/admin/total-users', (req, res) => {
-    const sql = "SELECT COUNT(*) AS total FROM db_user";
-    db.query(sql, (err, results) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Failed to fetch user count" });
-        }
-        return res.status(200).json({ total: results[0].total });
-    });
-});
-// Endpoint to get total number of active users
-
-//logout logic
-app.post('/logout', (req, res) => {
-  const { userId } = req.body;
-  db.query("UPDATE db_user SET is_active = 0 WHERE id = ?", [userId], (err) => {
-    if (err) return res.status(500).json({ message: "Logout failed" });
-    res.status(200).json({ message: "Logged out" });
-  });
-});
-// End of logout logic
-
-//start count active users
-app.get('/admin/active-users', (req, res) => {
-  const sql = "SELECT COUNT(*) AS active FROM db_user WHERE is_active = 1";
-  db.query(sql, (err, results) => {
-      if (err) {
-          console.error(err);
-          return res.status(500).json({ message: "Failed to fetch active user count" });
-      }
-      return res.status(200).json({ active: results[0].active });
-  });
-});
-// endpoint to get total number of active users
-// Get total number of users leaving (not active)
-app.get('/admin/users-leaving', (req, res) => {
-    const sql = "SELECT COUNT(*) AS leaving FROM db_user WHERE is_active = 0";
-    db.query(sql, (err, results) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Failed to fetch users leaving count" });
-        }
-        return res.status(200).json({ leaving: results[0].leaving });
-    });
-});
-// Endpoint to get total number of users leaving (not active)
-
-// Get total number of users undergoing treatment (unique emails in user_conditions)
-app.get('/admin/users-undergoing-treatment', (req, res) => {
-    const sql = "SELECT COUNT(DISTINCT email) AS total FROM user_conditions";
-    db.query(sql, (err, results) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Failed to fetch users undergoing treatment" });
-        }
-        return res.status(200).json({ total: results[0].total });
-    });
-});
-// endpoint to get total number of users undergoing treatment
-
-// Get all appointment IDs
-app.get('/admin/appointment-ids', (req, res) => {
-    const sql = "SELECT id, user_name FROM appointments";
-    db.query(sql, (err, results) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Failed to fetch appointment IDs" });
-        }
-        // Return an array of objects with id and user_name
-        return res.status(200).json({ ids: results });
-    });
-});
-
-// fetch for doctors
-// Get total number of doctors
-app.get('/admin/total-doctors', (req, res) => {
-    const sql = "SELECT COUNT(*) AS total FROM doctor";
-    db.query(sql, (err, results) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Failed to fetch doctor count" });
-        }
-        return res.status(200).json({ total: results[0].total });
-    });
-});
-// Endpoint to get total number of doctors
-
-// server code to add a new doctor
-app.post('/admin/doctors', (req, res) => {
-  const { name, specialty, email, phone, experience, active_status } = req.body;
-  const sql = `
-    INSERT INTO doctor (Doctor_name, specialty, email, phone, experience, active_status)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `;
-  db.query(sql, [name, specialty, email, phone, experience, active_status || 'Available'], (err, result) => {
-    if (err) return res.status(500).json({ message: "Failed to add doctor" });
-    res.status(200).json({ message: "Doctor added successfully", id: result.insertId });
-  });
-});
-// Endpoint to add a new doctor
-
-//Server code to delete a doctor
-app.delete('/admin/doctors/:id', (req, res) => {
-  const { id } = req.params;
-  db.query("DELETE FROM doctor WHERE id = ?", [id], (err) => {
-    if (err) return res.status(500).json({ message: "Failed to delete doctor" });
-    res.status(200).json({ message: "Doctor deleted successfully" });
-  });
-});
-// Endpoint to delete a doctor
-
-// Get all active doctors (active_status = 'Available')
-app.get('/admin/active-doctors', (req, res) => {
-    const sql = "SELECT * FROM doctor WHERE active_status = 'Available'";
-    db.query(sql, (err, results) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Failed to fetch active doctors" });
-        }
-        return res.status(200).json({ doctors: results });
-    });
-});
-// Get all appointments
-app.get('/admin/appointments', (req, res) => {
-    const sql = `
-        SELECT 
-            a.id, 
-            a.appointment_date, 
-            a.user_name, 
-            d.Doctor_name 
-        FROM appointments a
-        LEFT JOIN doctor d ON a.doctor_id = d.id
-    `;
-    db.query(sql, (err, results) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Failed to fetch appointments" });
-        }
-        return res.status(200).json({ appointments: results });
-    });
-});
-// End of fetching appointments for the doctor dashboard appointments section
-app.get('/api/appointments', (req, res) => {
-  const query = `
-    SELECT 
-      a.id,
-      a.user_name AS patientName,
-      DATE(a.appointment_date) AS date,
-      TIME(a.appointment_date) AS time,
-      d.doctor_name AS doctor,
-      a.status
-    FROM 
-      appointments AS a
-    JOIN 
-      doctor AS d ON a.doctor_id = d.id
-  `;
-  
-  db.query(query, (err, results) => {
-    if (err) {
-      console.error('Error fetching appointments:', err);
-      return res.status(500).json({ message: 'Failed to fetch appointment details' });
+  // The rest of your component logic remains the same
+  const [patientData] = useState({
+    patientInformation: {
+      fullName: "Sarah Johnson",
+      age: 28,
+      gender: "Female",
+      dateOfReport: "2024-05-25",
+      patientID: "PT-2024-5678",
+      contact: "(555) 987-6543"
+    },
+    imageDetails: {
+      uploadedImage: "dermatology-scan.jpg",
+      metadata: {
+        uploadTime: "2024-05-25T14:30:00Z",
+        size: "3.2MB"
+      },
+      bodyPartCaptured: "Left Forearm"
+    },
+    diagnosisResult: { // This will now be overridden by actual API data
+      skinDiseaseName: "Eczema",
+      confidenceScore: "94%",
+      infoLink: "https://medinfo.com/psoriasis"
+    },
+    description: {
+      overview: "Psoriasis is a chronic autoimmune condition that causes rapid skin cell buildup, resulting in scaling on the skin's surface.",
+      commonSymptoms: "Red patches of skin covered with thick, silvery scales, dry cracked skin that may bleed, itching and burning",
+      causes: "Genetic factors, immune system dysfunction, environmental triggers",
+      contagious: "No",
+      severityLevel: "Moderate"
+    },
+    recommendedAction: {
+      seeProfessional: true,
+      treatment: "Topical corticosteroids, moisturizing creams, phototherapy",
+      otcOptions: "Coal tar shampoo, salicylic acid creams, moisturizers",
+      urgencyLevel: "Normal"
+    },
+    medicalHistory: {
+      pastDetections: "Mild eczema (2022), Contact dermatitis (2023)",
+      previousTreatments: "Hydrocortisone cream, antihistamines"
     }
-    return res.status(200).json(results);
   });
-});
 
-
-// Update Appointment Status in the DB
-app.put('/appointments/:id/status', (req, res) => {
-  const { id } = req.params;
-  const { status } = req.body;
-
-  const sql = "UPDATE appointments SET status = ? WHERE id = ?";
-  db.query(sql, [status, id], (err) => {
-    if (err) {
-      console.error("DB update error:", err);
-      return res.status(500).json({ error: "Failed to update status" });
+  const getSeverityColor = (severity) => {
+    switch (severity?.toLowerCase()) {
+      case 'mild': return { color: '#16a34a', backgroundColor: '#f0fdf4' };
+      case 'moderate': return { color: '#ca8a04', backgroundColor: '#fefce8' };
+      case 'severe': return { color: '#dc2626', backgroundColor: '#fef2f2' };
+      default: return { color: '#6b7280', backgroundColor: '#f9fafb' };
     }
-    return res.json({ success: true });
-  });
-});
+  };
 
-// fetch doctors for the dashboard
-app.get('/doctors', (req, res) => {
-  db.query("SELECT Doctor_name FROM doctor", (err, results) => {
-    if (err) return res.status(500).json({ error: "Failed to fetch doctors" });
-    res.json(results.map(doc => doc.Doctor_name));
-  });
-});
+  const getUrgencyColor = (urgency) => {
+    switch (urgency?.toLowerCase()) {
+      case 'normal': return { color: '#16a34a', backgroundColor: '#f0fdf4' };
+      case 'urgent': return { color: '#ea580c', backgroundColor: '#fff7ed' };
+      case 'emergency': return { color: '#dc2626', backgroundColor: '#fef2f2' };
+      default: return { color: '#6b7280', backgroundColor: '#f9fafb' };
+    }
+  };
 
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
-const server = http.createServer(app);
+  const formatTime = (timeString) => {
+    return new Date(timeString).toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
-server.on('clientError', (err, socket) => {
-    console.warn('Client error:', err.message);
-    socket.destroy();
-});
+  const styles = {
+    container: {
+      maxWidth: '1024px',
+      margin: '0 auto',
+      padding: '24px',
+      backgroundColor: '#f9fafb',
+      minHeight: '100vh',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+    },
+    card: {
+      backgroundColor: 'white',
+      borderRadius: '8px',
+      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+      overflow: 'hidden'
+    },
+    header: {
+      backgroundColor: '#2563eb',
+      color: 'white',
+      padding: '24px',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      flexWrap: 'wrap'
+    },
+    headerTitle: {
+      fontSize: '24px',
+      fontWeight: 'bold',
+      margin: 0
+    },
+    headerSubtitle: {
+      color: '#bfdbfe',
+      marginTop: '4px',
+      margin: 0
+    },
+    headerRight: {
+      textAlign: 'right'
+    },
+    headerLabel: {
+      fontSize: '14px',
+      color: '#bfdbfe'
+    },
+    headerCode: {
+      fontFamily: 'monospace',
+      fontSize: '18px',
+      margin: 0
+    },
+    content: {
+      padding: '24px'
+    },
+    section: {
+      backgroundColor: '#f9fafb',
+      borderRadius: '8px',
+      padding: '24px',
+      marginBottom: '32px'
+    },
+    sectionHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      marginBottom: '16px'
+    },
+    sectionTitle: {
+      fontSize: '20px',
+      fontWeight: '600',
+      color: '#1f2937',
+      marginLeft: '8px',
+      margin: 0
+    },
+    icon: {
+      color: '#2563eb'
+    },
+    grid: {
+      display: 'grid',
+      gap: '16px'
+    },
+    gridCols3: {
+      gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))'
+    },
+    gridCols2: {
+      gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))'
+    },
+    fieldGroup: {
+      marginBottom: '16px'
+    },
+    label: {
+      fontSize: '14px',
+      fontWeight: '500',
+      color: '#6b7280',
+      display: 'block',
+      marginBottom: '4px'
+    },
+    value: {
+      fontSize: '16px',
+      color: '#1f2937'
+    },
+    valueLarge: {
+      fontSize: '18px',
+      fontWeight: '600',
+      color: '#1f2937'
+    },
+    imageUpload: {
+      backgroundColor: 'white',
+      borderRadius: '8px',
+      padding: '16px',
+      border: '2px dashed #d1d5db',
+      textAlign: 'center'
+    },
+    imageIcon: {
+      width: '48px',
+      height: '48px',
+      color: '#9ca3af',
+      margin: '0 auto 8px'
+    },
+    imageText: {
+      fontSize: '14px',
+      color: '#6b7280'
+    },
+    imageSubtext: {
+      fontSize: '12px',
+      color: '#9ca3af',
+      marginTop: '4px'
+    },
+    diagnosisSection: {
+      backgroundColor: '#eff6ff'
+    },
+    diagnosisTitle: {
+      fontSize: '32px',
+      fontWeight: 'bold',
+      color: '#1d4ed8',
+      marginBottom: '8px'
+    },
+    confidenceBadge: {
+      backgroundColor: '#f0fdf4',
+      color: '#16a34a',
+      padding: '6px 12px',
+      borderRadius: '9999px',
+      fontSize: '14px',
+      fontWeight: '500',
+      display: 'inline-block'
+    },
+    learnMoreBtn: {
+      display: 'inline-flex',
+      alignItems: 'center',
+      padding: '8px 16px',
+      backgroundColor: '#2563eb',
+      color: 'white',
+      borderRadius: '8px',
+      textDecoration: 'none',
+      fontSize: '14px',
+      fontWeight: '500',
+      transition: 'background-color 0.2s',
+      border: 'none',
+      cursor: 'pointer'
+    },
+    learnMoreBtnIcon: {
+      marginRight: '8px',
+      width: '16px',
+      height: '16px'
+    },
+    detailsSection: {
+      backgroundColor: '#f9fafb'
+    },
+    detailItem: {
+      marginBottom: '16px'
+    },
+    detailTitle: {
+      fontWeight: '600',
+      color: '#374151',
+      marginBottom: '8px'
+    },
+    detailText: {
+      color: '#1f2937',
+      lineHeight: '1.6'
+    },
+    badge: {
+      padding: '6px 12px',
+      borderRadius: '9999px',
+      fontSize: '14px',
+      fontWeight: '500',
+      display: 'inline-block'
+    },
+    nonContagiousBadge: {
+      backgroundColor: '#f0fdf4',
+      color: '#16a34a'
+    },
+    contagiousBadge: {
+      backgroundColor: '#fef2f2',
+      color: '#dc2626'
+    },
+    actionsSection: {
+      backgroundColor: '#fffbeb'
+    },
+    actionCard: {
+      backgroundColor: 'white',
+      borderRadius: '8px',
+      padding: '16px',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: '16px'
+    },
+    actionTitle: {
+      fontWeight: '600',
+      color: '#374151',
+      marginBottom: '4px'
+    },
+    actionDesc: {
+      fontSize: '14px',
+      color: '#6b7280'
+    },
+    treatmentCard: {
+      backgroundColor: 'white',
+      borderRadius: '8px',
+      padding: '16px',
+      marginBottom: '16px'
+    },
+    historySection: {
+      backgroundColor: '#f9fafb'
+    },
+    disclaimerSection: {
+      backgroundColor: '#fef2f2',
+      border: '1px solid #fecaca',
+      borderRadius: '8px',
+      padding: '24px',
+      display: 'flex',
+      alignItems: 'flex-start'
+    },
+    disclaimerIcon: {
+      color: '#dc2626',
+      marginRight: '12px',
+      marginTop: '4px',
+      flexShrink: 0
+    },
+    disclaimerTitle: {
+      fontSize: '18px',
+      fontWeight: '600',
+      color: '#b91c1c',
+      marginBottom: '8px'
+    },
+    disclaimerText: {
+      color: '#b91c1c',
+      lineHeight: '1.6'
+    },
+    footer: {
+      backgroundColor: '#f3f4f6',
+      padding: '16px',
+      textAlign: 'center'
+    },
+    footerText: {
+      fontSize: '14px',
+      color: '#6b7280'
+    }
+  };
 
-server.listen(8081, () => {
-    console.log("Server running on port 8081");
-});
+  return (
+    <div id="body" className="grid-container">
+      <DashboardHeader></DashboardHeader>
+      <DashboardNav></DashboardNav>
+      <div id="DashboardText-container">
+        <div style={styles.container}>
+          <div style={styles.card}>
+            {/* Header */}
+            <div style={styles.header}>
+              <div>
+                <h1 style={styles.headerTitle}>Patient Condition Report</h1>
+                <p style={styles.headerSubtitle}>Dermatological Analysis & Recommendations</p>
+              </div>
+              <div style={styles.headerRight}>
+                <p style={styles.headerLabel}>Report ID</p>
+                <p style={styles.headerCode}>{patientData.patientInformation.patientID}</p>
+              </div>
+            </div>
+
+            <div style={styles.content}>
+              {/* Patient Information */}
+              <section style={styles.section}>
+                <div style={styles.sectionHeader}>
+                  <User size={24} style={styles.icon} />
+                  <h2 style={styles.sectionTitle}>Patient Information</h2>
+                </div>
+                <div style={{ ...styles.grid, ...styles.gridCols3 }}>
+                  <div style={styles.fieldGroup}>
+                    <label style={styles.label}>Full Name</label>
+                    <p style={styles.valueLarge}>
+                      {patientInfo.fullName && patientInfo.fullName !== 'N/A' ? patientInfo.fullName : 'N/A'}
+                    </p>
+                  </div>
+                  <div style={styles.fieldGroup}>
+                    <label style={styles.label}>Age</label>
+                    <p style={styles.valueLarge}>
+                      {patientInfo.age && patientInfo.age !== 'N/A' ? `${patientInfo.age} years` : 'N/A'}
+                    </p>
+                  </div>
+                  <div style={styles.fieldGroup}>
+                    <label style={styles.label}>Contact</label>
+                    <p style={styles.valueLarge}>
+                      {patientInfo.contact && patientInfo.contact !== 'N/A' ? patientInfo.contact : 'N/A'}
+                    </p>
+                  </div>
+                  <div style={styles.fieldGroup}>
+                    <label style={styles.label}>Date of Report</label>
+                    <p style={styles.valueLarge}>
+                      {patientInfo.dateOfReport && patientInfo.dateOfReport !== 'N/A' && patientInfo.dateOfReport !== null ? formatDate(patientInfo.dateOfReport) : 'N/A'}
+                    </p>
+                  </div>
+                </div>
+              </section>
+              {/* Image Details */}
+              <section style={styles.section}>
+                <div style={styles.sectionHeader}>
+                  <Image size={24} style={styles.icon} />
+                  <h2 style={styles.sectionTitle}>Image Analysis</h2>
+                </div>
+                <div style={{ ...styles.grid, ...styles.gridCols2 }}>
+                  <div>
+                    <div style={styles.imageUpload}>
+                      <Upload style={styles.imageIcon} />
+                      <p style={styles.imageText}>Image: {patientData.imageDetails.uploadedImage}</p>
+                      <p style={styles.imageSubtext}>Click to view full image</p>
+                    </div>
+                  </div>
+                  <div>
+                    <div style={styles.fieldGroup}>
+                      <label style={styles.label}>Body Part</label>
+                      <p style={styles.valueLarge}>{patientData.imageDetails.bodyPartCaptured}</p>
+                    </div>
+                    <div style={styles.fieldGroup}>
+                      <label style={styles.label}>Upload Time</label>
+                      <p style={styles.value}>{formatTime(patientData.imageDetails.metadata.uploadTime)}</p>
+                    </div>
+                    <div style={styles.fieldGroup}>
+                      <label style={styles.label}>File Size</label>
+                      <p style={styles.value}>{patientData.imageDetails.metadata.size}</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Diagnosis Result */}
+              <section style={{ ...styles.section, ...styles.diagnosisSection }}>
+                <div style={styles.sectionHeader}>
+                  <Stethoscope size={24} style={styles.icon} />
+                  <h2 style={styles.sectionTitle}>Diagnosis Result</h2>
+                </div>
+                <div style={{ ...styles.grid, ...styles.gridCols2 }}>
+                  <div>
+                    <label style={styles.label}>Detected Condition</label>
+                    {/* Display fetched prediction here */}
+                    <p style={styles.diagnosisTitle}>{diagnosisResult.prediction}</p> 
+                    <div>
+                      <span style={styles.confidenceBadge}>
+                        {/* Display fetched confidence here */}
+                        Confidence: {diagnosisResult.confidence} 
+                      </span>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                    <a
+                      href={patientData.diagnosisResult.infoLink}
+                      style={styles.learnMoreBtn}
+                      onMouseOver={(e) => e.target.style.backgroundColor = '#1d4ed8'}
+                      onMouseOut={(e) => e.target.style.backgroundColor = '#2563eb'}
+                    >
+                      <BookOpen style={styles.learnMoreBtnIcon} />
+                      Learn More About This Condition
+                    </a>
+                  </div>
+                </div>
+              </section>
+
+              {/* Description */}
+              <section style={styles.detailsSection}>
+                <div style={styles.sectionHeader}>
+                  <BookOpen size={24} style={styles.icon} />
+                  <h2 style={styles.sectionTitle}>Condition Details</h2>
+                </div>
+                <div>
+                  <div style={styles.detailItem}>
+                    <h3 style={styles.detailTitle}>Overview</h3>
+                    <p style={styles.detailText}>{patientData.description.overview}</p>
+                  </div>
+                  <div style={styles.detailItem}>
+                    <h3 style={styles.detailTitle}>Common Symptoms</h3>
+                    <p style={styles.detailText}>{patientData.description.commonSymptoms}</p>
+                  </div>
+                  <div style={styles.detailItem}>
+                    <h3 style={styles.detailTitle}>Causes</h3>
+                    <p style={styles.detailText}>{patientData.description.causes}</p>
+                  </div>
+                  <div style={{ ...styles.grid, ...styles.gridCols2 }}>
+                    <div style={styles.fieldGroup}>
+                      <h3 style={styles.detailTitle}>Contagious</h3>
+                      <span style={{
+                        ...styles.badge,
+                        ...(patientData.description.contagious.toLowerCase() === 'no'
+                          ? styles.nonContagiousBadge
+                          : styles.contagiousBadge)
+                      }}>
+                        {patientData.description.contagious}
+                      </span>
+                    </div>
+                    <div style={styles.fieldGroup}>
+                      <h3 style={styles.detailTitle}>Severity Level</h3>
+                      <span style={{
+                        ...styles.badge,
+                        ...getSeverityColor(patientData.description.severityLevel)
+                      }}>
+                        {patientData.description.severityLevel}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Recommended Actions */}
+              <section style={{ ...styles.section, ...styles.actionsSection }}>
+                <div style={styles.sectionHeader}>
+                  <AlertCircle size={24} style={{ color: '#d97706' }} />
+                  <h2 style={styles.sectionTitle}>Recommended Actions</h2>
+                </div>
+                <div>
+                  <div style={styles.actionCard}>
+                    <div>
+                      <h3 style={styles.actionTitle}>Professional Consultation</h3>
+                      <p style={styles.actionDesc}>
+                        {patientData.recommendedAction.seeProfessional
+                          ? "Recommended to see a dermatologist or medical professional"
+                          : "Self-care may be sufficient"}
+                      </p>
+                    </div>
+                    <span style={{
+                      ...styles.badge,
+                      ...getUrgencyColor(patientData.recommendedAction.urgencyLevel)
+                    }}>
+                      {patientData.recommendedAction.urgencyLevel}
+                    </span>
+                  </div>
+
+                  <div style={styles.treatmentCard}>
+                    <h3 style={styles.detailTitle}>Suggested Treatment</h3>
+                    <p style={styles.detailText}>{patientData.recommendedAction.treatment}</p>
+                  </div>
+
+                  <div style={styles.treatmentCard}>
+                    <h3 style={styles.detailTitle}>Over-the-Counter Options</h3>
+                    <p style={styles.detailText}>{patientData.recommendedAction.otcOptions}</p>
+                  </div>
+                </div>
+              </section>
+
+              {/* Medical History */}
+              <section style={styles.historySection}>
+                <div style={styles.sectionHeader}>
+                  <Clock size={24} style={styles.icon} />
+                  <h2 style={styles.sectionTitle}>Medical History</h2>
+                </div>
+                <div style={{ ...styles.grid, ...styles.gridCols2 }}>
+                  <div style={styles.fieldGroup}>
+                    <h3 style={styles.detailTitle}>Past Detections</h3>
+                    <ul style={styles.detailText}>
+                      {medicalHistory.pastDetections.length > 0 ? (
+                        medicalHistory.pastDetections.map((cond, idx) => (
+                          <li key={idx}>{cond}</li>
+                        ))
+                      ) : (
+                        <li>No past detections</li>
+                      )}
+                    </ul>
+                  </div>
+                  <div style={styles.fieldGroup}>
+                    <h3 style={styles.detailTitle}>Previous Treatments</h3>
+                    <ul style={styles.detailText}>
+                      {medicalHistory.previousTreatments.length > 0 ? (
+                        medicalHistory.previousTreatments.map((treat, idx) => (
+                          <li key={idx}>{treat}</li>
+                        ))
+                      ) : (
+                        <li>No previous treatments</li>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              </section>
+
+              {/* Disclaimer */}
+              <section style={styles.disclaimerSection}>
+                <Shield size={24} style={styles.disclaimerIcon} />
+                <div>
+                  <h2 style={styles.disclaimerTitle}>Important Disclaimer</h2>
+                  <p style={styles.disclaimerText}>
+                    This automated analysis is for informational and educational purposes only and should not replace professional medical advice, diagnosis, or treatment. Always consult with a qualified healthcare provider for proper medical evaluation and treatment recommendations. The AI-generated diagnosis may not be 100% accurate and should be verified by a medical professional.
+                  </p>
+                </div>
+              </section>
+            </div>
+
+            {/* Footer */}
+            <div style={styles.footer}>
+              <p style={styles.footerText}>
+                Created on {formatDate(new Date().toISOString())} |
+                For medical emergencies, please contact your local emergency services
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+DashboardReports.propTypes = {
+  userEmail: PropTypes.string.isRequired
+};
+
+export default DashboardReports;
