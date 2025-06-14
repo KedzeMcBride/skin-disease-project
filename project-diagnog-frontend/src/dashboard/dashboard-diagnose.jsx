@@ -127,7 +127,7 @@ const DashboardDiagnose = () => {
                     {prediction && (
                         <div className="prediction-result" style={{marginTop: '20px', paddingLeft:'50px'}}>
                             <h3>Prediction: {prediction.prediction}</h3>
-                            <p>Confidence: {prediction.confidence}%</p>
+                            <h4>Confidence: {prediction.confidence}%</h4>
                         </div>
                     )}
                 </div>
